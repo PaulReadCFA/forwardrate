@@ -3,7 +3,7 @@
  * Dual-axis chart showing cash flows (bars) and interest rates (lines/points)
  */
 
-import { formatCurrency, formatPercentage } from './utils.js';
+import { formatCurrency, formatCurrencySimple, formatPercentage } from './utils.js';
 
 const COLORS = {
   oneyear: '#3c6ae5',         // Blue - 1-year strategy
@@ -180,25 +180,47 @@ export function renderChart(calculations, showLabels = true) {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Year' },
+          title: { 
+            display: true, 
+            text: 'Year',
+            color: '#1f2937',
+            font: { weight: 'bold', size: 13 }
+          },
+          ticks: {
+            color: '#1f2937',
+            font: { weight: '500', size: 12 }
+          },
           grid: { display: false }
         },
         'y-cash': {
-          title: { display: true, text: 'Cash Flows ($)' },
+          title: { 
+            display: true, 
+            text: 'Cash Flows (USD)',
+            color: '#1f2937',
+            font: { weight: 'bold', size: 13 }
+          },
           position: 'left',
           ticks: {
-            callback: function(value) { return formatCurrency(value); }
+            callback: function(value) { return formatCurrencySimple(value); },
+            color: '#1f2937',
+            font: { weight: '500', size: 12 }
           },
           grid: { color: 'rgba(0, 0, 0, 0.05)' }
         },
         'y-rate': {
-          title: { display: true, text: 'Interest Rates (%)' },
+          title: { 
+            display: true, 
+            text: 'Interest Rates (%)',
+            color: '#1f2937',
+            font: { weight: 'bold', size: 13 }
+          },
           position: 'right',
           min: 0,
           max: Math.max(10, calculations.forwardRate * 1.3),
           ticks: {
             callback: function(value) { return formatPercentage(value, 1); },
-            color: COLORS.forward
+            color: '#1f2937',
+            font: { weight: '500', size: 12 }
           },
           grid: { display: false }
         }

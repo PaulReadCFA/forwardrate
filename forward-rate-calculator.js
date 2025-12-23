@@ -167,7 +167,7 @@ function switchView(view) {
     
     chartContainer.style.display = 'block';
     tableContainer.style.display = 'none';
-    legend.style.display = 'flex';
+    legend.style.visibility = 'visible';
     
     announceToScreenReader('Chart view active');
     focusElement(chartContainer, 100);
@@ -180,7 +180,7 @@ function switchView(view) {
     
     tableContainer.style.display = 'block';
     chartContainer.style.display = 'none';
-    legend.style.display = 'none';
+    legend.style.visibility = 'hidden';
     
     announceToScreenReader('Table view active');
     focusElement($('#cash-flow-table'), 100);
@@ -294,22 +294,22 @@ function runSelfTests() {
       if (test.expected.forwardApprox !== undefined) {
         const diff = Math.abs(result.forwardRate - test.expected.forwardApprox);
         if (diff <= 0.1) {
-          console.log(`✓ ${test.name} passed`);
+          console.log(`âœ“ ${test.name} passed`);
         } else {
-          console.warn(`✗ ${test.name} failed: expected ~${test.expected.forwardApprox}%, got ${result.forwardRate.toFixed(2)}%`);
+          console.warn(`âœ— ${test.name} failed: expected ~${test.expected.forwardApprox}%, got ${result.forwardRate.toFixed(2)}%`);
         }
       }
       
       if (test.expected.strategiesEqual) {
         const diff = Math.abs(result.strategy1Final - result.strategy2Final);
         if (diff < 0.01) {
-          console.log(`✓ ${test.name} passed: strategies equal`);
+          console.log(`âœ“ ${test.name} passed: strategies equal`);
         } else {
-          console.warn(`✗ ${test.name} failed: strategy values differ by $${diff.toFixed(2)}`);
+          console.warn(`âœ— ${test.name} failed: strategy values differ by USD ${diff.toFixed(2)}`);
         }
       }
     } catch (error) {
-      console.error(`✗ ${test.name} threw error:`, error);
+      console.error(`âœ— ${test.name} threw error:`, error);
     }
   });
   

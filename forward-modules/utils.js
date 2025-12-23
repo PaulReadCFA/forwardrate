@@ -51,9 +51,27 @@ export function formatCurrency(value, signed = false) {
   });
   
   if (value < 0) {
-    return signed ? `-$${formatted}` : `($${formatted})`;
+    return signed ? `-USD ${formatted}` : `(USD ${formatted})`;
   }
-  return `$${formatted}`;
+  return `USD ${formatted}`;
+}
+
+/**
+ * Format number as currency for chart ticks (no USD prefix)
+ * @param {number} value - Numeric value
+ * @returns {string} Formatted currency string
+ */
+export function formatCurrencySimple(value) {
+  const absValue = Math.abs(value);
+  const formatted = absValue.toLocaleString('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  
+  if (value < 0) {
+    return `(${formatted})`;
+  }
+  return formatted;
 }
 
 /**

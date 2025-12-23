@@ -116,9 +116,9 @@ function formatRates(cf) {
 
 function getStrategy1Tooltip(cf, isYear0, isYear1, isYear2) {
   if (isYear0) {
-    return 'Initial investment of $100';
+    return 'Initial investment of USD 100';
   } else if (isYear1) {
-    return `$100 invested at 1-year spot rate matures to ${formatCurrency(cf.strategy1Maturity)}, then reinvested at forward rate`;
+    return `USD 100 invested at 1-year spot rate matures to ${formatCurrency(cf.strategy1Maturity)}, then reinvested at forward rate`;
   } else if (isYear2) {
     return `Final value after reinvesting at forward rate f(1,1) = ${formatCurrency(cf.strategy1Cash)}`;
   }
@@ -127,7 +127,7 @@ function getStrategy1Tooltip(cf, isYear0, isYear1, isYear2) {
 
 function getStrategy2Tooltip(cf, isYear0, isYear2) {
   if (isYear0) {
-    return 'Initial investment of $100';
+    return 'Initial investment of USD 100';
   } else if (isYear2) {
     return `Final value after 2 years at 2-year spot rate = ${formatCurrency(cf.strategy2Cash)}`;
   }

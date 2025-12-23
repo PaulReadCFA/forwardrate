@@ -86,7 +86,7 @@ function createStrategy1Box(calculations, params) {
   
   // Year 0 to 1
   const step1 = createElement('div', { style: 'margin-bottom: 0.5rem;' });
-  step1.innerHTML = `<strong>Year 0 → 1:</strong> $100 @ ${formatPercentage(params.spot1Year)} = ${formatCurrency(calculations.strategy1Year1Value)}`;
+  step1.innerHTML = `<strong>Year 0 → 1:</strong> USD 100 @ ${formatPercentage(params.spot1Year)} = ${formatCurrency(calculations.strategy1Year1Value)}`;
   details.appendChild(step1);
   
   // Year 1 to 2
@@ -129,7 +129,7 @@ function createStrategy2Box(calculations, params) {
   
   // Investment description
   const desc = createElement('div', { style: 'margin-bottom: 0.5rem;' });
-  desc.innerHTML = `<strong>Year 0 → 2:</strong> $100 @ ${formatPercentage(params.spot2Year)} annually`;
+  desc.innerHTML = `<strong>Year 0 → 2:</strong> USD 100 @ ${formatPercentage(params.spot2Year)} annually`;
   details.appendChild(desc);
   
   // Compound calculation
@@ -142,7 +142,7 @@ function createStrategy2Box(calculations, params) {
   const calc = createElement('div', { 
     style: 'font-size: 0.75rem; color: #6b7280; margin-bottom: 0.5rem; padding: 0.5rem; background: #fff7ed; border-radius: 0.25rem;'
   });
-  calc.innerHTML = `Full calculation: $100 × ${compoundFactor.toFixed(4)} = ${formatCurrency(calculations.strategy2Final)}`;
+  calc.innerHTML = `Full calculation: USD 100 × ${compoundFactor.toFixed(4)} = ${formatCurrency(calculations.strategy2Final)}`;
   details.appendChild(calc);
   
   // Final value
