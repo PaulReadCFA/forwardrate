@@ -63,15 +63,15 @@ function setupSkipLinks() {
   if (skipToVisualizer) {
     listen(skipToVisualizer, 'click', (e) => {
       e.preventDefault();
-      switchView('table');
+      switchView('table', false);
       const section = $('#visualizer');
       if (section) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       setTimeout(() => {
-        const table = $('#cash-flow-table');
-        if (table) {
-          table.focus();
+        const tableContainer = $('#table-container');
+        if (tableContainer) {
+          tableContainer.focus();
         }
       }, 400);
     });

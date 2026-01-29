@@ -248,23 +248,13 @@ export function renderChart(calculations, showLabels = true) {
             if (!value || Math.abs(value) < 0.01) return;
             
             if (value < 0) {
-              // Negative bars: white text with dark background near top of bar
+              // Negative bars: black text near top of bar
               const text = formatCurrencySimple(value);
-              const textWidth = ctx.measureText(text).width;
-              // Position near the top of the negative bar (just below the zero line)
               const labelY = bar.y + 15;
               
-              // Draw background rectangle
-              ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-              ctx.fillRect(bar.x - textWidth/2 - 3, labelY - 8, textWidth + 6, 16);
-              
-              // Draw white text
-              ctx.fillStyle = '#ffffff';
+              ctx.fillStyle = COLORS.darkText;
               ctx.textBaseline = 'middle';
               ctx.fillText(text, bar.x, labelY);
-              
-              // Reset
-              ctx.fillStyle = COLORS.darkText;
               ctx.textBaseline = 'bottom';
             } else {
               // Positive bars: black text above
