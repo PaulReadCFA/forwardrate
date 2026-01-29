@@ -43,13 +43,13 @@ export function renderTable(calculations) {
     html += `
       <tr>
         <td class="text-left"><strong>${cf.year}</strong></td>
-        <td class="text-right" data-tooltip="${getStrategy1Tooltip(cf, isYear0, isYear1, isYear2)}" tabindex="0">
+        <td class="text-right" data-tooltip="${getStrategy1Tooltip(cf, isYear0, isYear1, isYear2)}">
           ${formatStrategy1(cf, isYear0, isYear1, isYear2)}
         </td>
-        <td class="text-right" data-tooltip="${getStrategy2Tooltip(cf, isYear0, isYear2)}" tabindex="0">
+        <td class="text-right" data-tooltip="${getStrategy2Tooltip(cf, isYear0, isYear2)}">
           ${formatStrategy2(cf, isYear0, isYear2)}
         </td>
-        <td class="text-right" data-tooltip="${getRatesTooltip(cf)}" tabindex="0">
+        <td class="text-right" data-tooltip="${getRatesTooltip(cf)}">
           ${formatRates(cf)}
         </td>
       </tr>`;
@@ -102,10 +102,10 @@ function formatRates(cf) {
   const rates = [];
   
   if (cf.spot1Year !== null) {
-    rates.push(`<span style="color: #38337b;">s₁: ${formatPercentage(cf.spot1Year)}</span>`);
+    rates.push(`<span style="color: #047857;">r₁: ${formatPercentage(cf.spot1Year)}</span>`);
   }
   if (cf.spot2Year !== null) {
-    rates.push(`<span style="color: #ea792d;">s₂: ${formatPercentage(cf.spot2Year)}</span>`);
+    rates.push(`<span style="color: #dc2626;">r₁‚: ${formatPercentage(cf.spot2Year)}</span>`);
   }
   if (cf.forwardRate !== null) {
     rates.push(`<span style="color: #7a46ff;">f(1,1): ${formatPercentage(cf.forwardRate)}</span>`);

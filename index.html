@@ -10,6 +10,19 @@
   <link rel="stylesheet" href="cfa-base.css">
   <link rel="stylesheet" href="forward-rate-specific.css">
   
+  <!-- MathJax for equation rendering -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      menuSettings: { 
+        inTabOrder: false 
+      },
+      "HTML-CSS": {
+        mtextFontInherit: true
+      }
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  
   <!-- Chart.js for visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -17,20 +30,35 @@
   <div class="container">
     <!-- Skip Links for Accessibility -->
     <nav role="navigation" aria-label="Skip links">
-      <a href="#calculator" class="skip-link">Skip to calculator</a>
-      <a href="#visualizer" class="skip-link">Skip to data table</a>
+      <a href="#calculator" class="skip-link">Skip to data entry</a>
+      <a href="#visualizer" class="skip-link" id="skip-to-table">Skip to data table</a>
     </nav>
     
     <main class="content">
-      <!-- Card 1: Equation -->
-      <section id="equation-card" class="card">
+      <!-- Card 0: Static Formula Explanation -->
+      <section id="formula-card" class="card">
         <h4 class="card-title">Implied Forward Rate Equation</h4>
+        <p class="equation-intro">
+          A rearrangement of Equation 26 expresses the implied forward rate as a function of a longer-term and a short-term spot rate (in this case we focus on a two-year spot rate and a one-year spot rate). The implied forward rate (covering the period one year from now to two years from now) is therefore computed as follows:
+        </p>
+        
+        <!-- Static equation -->
+        <div class="equation-container" role="region" aria-label="Implied forward rate formula">
+          <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
+            $$\color{#7a46ff}{F_{1,2}} = \frac{(1+\color{#dc2626}{r_2})^2}{(1+\color{#047857}{r_1})} - 1$$
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 1: Dynamic Equation with User Values -->
+      <section id="equation-card" class="card">
+        <h4 class="card-title">Implied Forward Rate Equation with Your Inputs</h4>
         <p class="equation-intro">
           This equation calculates the forward rate that ensures no arbitrage between investing strategies.
         </p>
         
         <!-- Dynamic equation with actual values -->
-        <div class="equation-container" role="region" aria-label="Forward rate calculation with your values" aria-live="polite" id="dynamic-equation-container">
+        <div class="equation-container" role="region" aria-label="Forward rate calculation with your values" aria-live="polite" id="dynamic-equation-container" tabindex="0" style="height: 120px; min-height: 120px; display: flex; align-items: center; justify-content: center;">
           <div id="dynamic-mathml-equation">
             <!-- Populated by JavaScript -->
           </div>
@@ -50,7 +78,7 @@
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="spot-1year" class="input-label-inline">
-                  1-year spot rate <span style="color: var(--color-forward-spot1);">(s₁)</span>:
+                  1-year spot rate <span style="color: #047857;">(r₁)</span>:
                 </label>
                 <div class="input-with-suffix-inline">
                   <input 
@@ -64,7 +92,7 @@
 
               <div class="input-inline">
                 <label for="spot-2year" class="input-label-inline">
-                  2-year spot rate <span style="color: var(--color-forward-spot2);">(s₂)</span>:
+                  2-year spot rate <span style="color: #dc2626;">(r₂)</span>:
                 </label>
                 <div class="input-with-suffix-inline">
                   <input 
@@ -86,32 +114,40 @@
         </div>
       </section>
 
-      <!-- Card 3: Visualizer -->
+      <!-- Card 3: Visualizer (Chart/Table) -->
       <section class="card" id="visualizer" tabindex="-1">
-        <h4 class="card-title">Forward Rate Analysis</h4>
+        <h4 class="card-title">Implied Forward Rate Analysis</h4>
         <div class="card-content">
           <!-- View toggle buttons -->
           <div class="view-controls">
             <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
               <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: var(--color-forward-oneyear);"></span>
+                <span class="legend-color" style="background-color: #3c6ae5;"></span>
                 One-year strategy
               </span>
               <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: var(--color-forward-twoyear);"></span>
+                <span class="legend-color" style="background-color: #ea792d;"></span>
                 Two-year strategy
               </span>
               <span class="legend-item" role="listitem">
-                <span class="legend-color legend-dashed-line" style="border-bottom: 2px dashed var(--color-forward-rate); background: none; width: 1.5rem; height: 0; border-left: none; border-right: none; border-top: none;"></span>
-                Forward rate f(1,1)
+                <span class="legend-color" style="background-color: #047857;"></span>
+                1Y Spot r₁
+              </span>
+              <span class="legend-item" role="listitem">
+                <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
+                2Y Spot r₂
+              </span>
+              <span class="legend-item" role="listitem">
+                <span class="legend-color" style="background-color: #7a46ff;"></span>
+                Forward F₁,₂
               </span>
             </div>
             
             <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
-              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true">
+              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true" aria-label="Click Chart">
                 Chart
               </button>
-              <button id="table-view-btn" class="toggle-btn" aria-pressed="false">
+              <button id="table-view-btn" class="toggle-btn" aria-pressed="false" aria-label="Click Table">
                 Table
               </button>
             </div>
@@ -151,7 +187,7 @@
                role="region"  
                aria-label="Forward rate analysis table"  
                tabindex="-1">
-            <table id="cash-flow-table" class="data-table" aria-describedby="table-note" tabindex="0">
+            <table id="cash-flow-table" class="data-table" aria-describedby="table-note">
               <!-- Populated by JavaScript -->
             </table>
             <p id="table-note" class="table-note">
@@ -170,6 +206,7 @@
           </div>
         </div>
       </section>
+
     </main>
   </div>
 

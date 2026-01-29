@@ -23,69 +23,19 @@ export function renderDynamicEquation(calculations, params) {
   const s1 = (spot1Year / 100).toFixed(4);
   const s2 = (spot2Year / 100).toFixed(4);
   
-  // Build MathML equation with actual values
+  // Build equation with actual numeric values
   const mathML = `
-    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-      <mrow>
-        <mi mathcolor="#7a46ff" mathvariant="bold">f</mi>
-        <mo>(</mo>
-        <mn>1</mn>
-        <mo>,</mo>
-        <mn>1</mn>
-        <mo>)</mo>
-        <mo>=</mo>
-        <mfrac linethickness="1.2px">
-          <msup>
-            <mrow>
-              <mo>(</mo>
-              <mn>1</mn>
-              <mo>+</mo>
-              <msub>
-                <mi mathcolor="#ea792d">s</mi>
-                <mn>2</mn>
-              </msub>
-              <mo>)</mo>
-            </mrow>
-            <mn>2</mn>
-          </msup>
-          <mrow>
-            <mo>(</mo>
-            <mn>1</mn>
-            <mo>+</mo>
-            <msub>
-              <mi mathcolor="#38337b">s</mi>
-              <mn>1</mn>
-            </msub>
-            <mo>)</mo>
-          </mrow>
-        </mfrac>
-        <mo>−</mo>
-        <mn>1</mn>
-      </mrow>
-    </math>
-    
-    <div style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: #374151; font-family: monospace; background: #f3f4f6; padding: 0.75rem; border-radius: 0.375rem;">
-      <div style="margin-bottom: 0.5rem;"><strong>Substituting values:</strong></div>
-      <div style="color: #4b5563;">
-        f(1,1) = [(1 + <span style="color: #ea792d; font-weight: 600;">${s2}</span>)² ÷ (1 + <span style="color: #38337b; font-weight: 600;">${s1}</span>)] − 1
-      </div>
-      <div style="margin-top: 0.5rem; color: #7a46ff; font-weight: 700; font-size: 1rem;">
-        = ${formatPercentage(forwardRate)}
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 1rem; font-size: 0.8125rem; color: #6b7280;">
-      <div><strong>Where:</strong></div>
-      <div style="margin-top: 0.25rem;">
-        <span style="color: #38337b; font-weight: 600;">s₁ = ${formatPercentage(spot1Year)}</span> (1-year spot rate)
-      </div>
-      <div>
-        <span style="color: #ea792d; font-weight: 600;">s₂ = ${formatPercentage(spot2Year)}</span> (2-year spot rate)
-      </div>
+    <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
+      $$\\color{#7a46ff}{F_{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#047857}{${s1}})} - 1 = \\color{#7a46ff}{${formatPercentage(forwardRate)}}$$
     </div>
   `;
   
   container.innerHTML = mathML;
+  
+  // Trigger MathJax to re-render the equation
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+  }
   
   // Create screen-reader friendly announcement
   const announcement = `Implied forward rate f(1,1) equals ${formatPercentage(forwardRate)}. ` +

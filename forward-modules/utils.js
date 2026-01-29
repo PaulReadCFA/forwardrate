@@ -69,7 +69,7 @@ export function formatCurrencySimple(value) {
   });
   
   if (value < 0) {
-    return `(${formatted})`;
+    return `−${formatted}`;  // Unicode minus
   }
   return formatted;
 }

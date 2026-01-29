@@ -47,7 +47,18 @@ function init() {
 }
 
 function setupSkipLinks() {
-  const skipToVisualizer = document.querySelector('a[href="#visualizer"]');
+  const skipToCalculator = document.querySelector('a[href="#calculator"]');
+  const skipToVisualizer = document.querySelector('#skip-to-table');
+  
+  if (skipToCalculator) {
+    listen(skipToCalculator, 'click', (e) => {
+      e.preventDefault();
+      const firstInput = $('#spot-1year');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    });
+  }
   
   if (skipToVisualizer) {
     listen(skipToVisualizer, 'click', (e) => {
@@ -148,9 +159,26 @@ function setupViewToggle() {
   
   listen(chartBtn, 'click', () => switchView('chart'));
   listen(tableBtn, 'click', () => switchView('table'));
+  
+  // Arrow key navigation between buttons
+  const handleKeyNavigation = (e, currentBtn, otherBtn, currentView, otherView) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      // Switch view and move focus to the other button
+      switchView(otherView, false);
+      otherBtn.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      // Activate current button and move focus to content
+      switchView(currentView, true);
+    }
+  };
+  
+  listen(chartBtn, 'keydown', (e) => handleKeyNavigation(e, chartBtn, tableBtn, 'chart', 'table'));
+  listen(tableBtn, 'keydown', (e) => handleKeyNavigation(e, tableBtn, chartBtn, 'table', 'chart'));
 }
 
-function switchView(view) {
+function switchView(view, moveFocus = true) {
   const chartBtn = $('#chart-view-btn');
   const tableBtn = $('#table-view-btn');
   const chartContainer = $('#chart-container');
@@ -170,7 +198,9 @@ function switchView(view) {
     legend.style.visibility = 'visible';
     
     announceToScreenReader('Chart view active');
-    focusElement(chartContainer, 100);
+    if (moveFocus) {
+      focusElement(chartContainer, 100);
+    }
     
   } else {
     tableBtn.classList.add('active');
@@ -183,7 +213,9 @@ function switchView(view) {
     legend.style.visibility = 'hidden';
     
     announceToScreenReader('Table view active');
-    focusElement($('#cash-flow-table'), 100);
+    if (moveFocus) {
+      focusElement($('#cash-flow-table'), 100);
+    }
   }
 }
 
@@ -305,7 +337,7 @@ function runSelfTests() {
         if (diff < 0.01) {
           console.log(`âœ“ ${test.name} passed: strategies equal`);
         } else {
-          console.warn(`âœ— ${test.name} failed: strategy values differ by USD ${diff.toFixed(2)}`);
+          console.warn(`âœ— ${test.name} failed: strategy values differ by $${diff.toFixed(2)}`);
         }
       }
     } catch (error) {

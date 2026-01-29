@@ -8,12 +8,12 @@ import { formatCurrency, formatCurrencySimple, formatPercentage } from './utils.
 const COLORS = {
   oneyear: '#3c6ae5',         // Blue - 1-year strategy
   twoyear: '#ea792d',         // Orange - 2-year strategy
-  forward: '#7a46ff',         // Purple - forward rate
-  spot1: '#38337b',           // Dark blue - 1Y spot
-  spot2: '#ea792d',           // Orange - 2Y spot (line)
+  forward: '#7a46ff',         // Purple - forward rate (dashed line)
+  spot1: '#047857',           // Dark green - 1Y spot (point) - WCAG compliant
+  spot2: '#dc2626',           // Red - 2Y spot (line)
   maturity: '#2563eb',        // Bright blue - maturity value
   reinvest: '#38337b',        // Dark - reinvestment
-  darkText: '#06005a'
+  darkText: '#000000'         // Black for labels
 };
 
 let chartInstance = null;
@@ -102,9 +102,9 @@ export function renderChart(calculations, showLabels = true) {
           order: 2,
           barPercentage: 0.6
         },
-        // Interest rate line (right axis)
+        // Interest rate lines and points (right axis)
         {
-          label: '2Y Spot Rate',
+          label: '2Y Spot Rate (Line)',
           data: spot2Data,
           type: 'line',
           borderColor: COLORS.spot2,
@@ -114,9 +114,8 @@ export function renderChart(calculations, showLabels = true) {
           yAxisID: 'y-rate',
           order: 1
         },
-        // Interest rate points (right axis)
         {
-          label: '1Y Spot Rate',
+          label: '1Y Spot Rate (Point)',
           data: spot1Data,
           type: 'scatter',
           backgroundColor: COLORS.spot1,
@@ -126,7 +125,7 @@ export function renderChart(calculations, showLabels = true) {
           order: 0
         },
         {
-          label: 'Forward Rate f(1,1)',
+          label: 'Forward Rate F₁,₂ (Points)',
           data: forwardData,
           type: 'scatter',
           backgroundColor: COLORS.forward,
@@ -183,11 +182,11 @@ export function renderChart(calculations, showLabels = true) {
           title: { 
             display: true, 
             text: 'Year',
-            color: '#1f2937',
+            color: '#000000',
             font: { weight: 'bold', size: 13 }
           },
           ticks: {
-            color: '#1f2937',
+            color: '#000000',
             font: { weight: '500', size: 12 }
           },
           grid: { display: false }
@@ -196,13 +195,13 @@ export function renderChart(calculations, showLabels = true) {
           title: { 
             display: true, 
             text: 'Cash Flows (USD)',
-            color: '#1f2937',
+            color: '#000000',
             font: { weight: 'bold', size: 13 }
           },
           position: 'left',
           ticks: {
             callback: function(value) { return formatCurrencySimple(value); },
-            color: '#1f2937',
+            color: '#000000',
             font: { weight: '500', size: 12 }
           },
           grid: { color: 'rgba(0, 0, 0, 0.05)' }
@@ -210,16 +209,16 @@ export function renderChart(calculations, showLabels = true) {
         'y-rate': {
           title: { 
             display: true, 
-            text: 'Interest Rates (%)',
-            color: '#1f2937',
+            text: 'Interest rate %',
+            color: '#000000',
             font: { weight: 'bold', size: 13 }
           },
           position: 'right',
           min: 0,
           max: Math.max(10, calculations.forwardRate * 1.3),
           ticks: {
-            callback: function(value) { return formatPercentage(value, 1); },
-            color: '#1f2937',
+            callback: function(value) { return value.toFixed(1); },
+            color: '#000000',
             font: { weight: '500', size: 12 }
           },
           grid: { display: false }
@@ -248,8 +247,29 @@ export function renderChart(calculations, showLabels = true) {
             const value = dataset.data[index];
             if (!value || Math.abs(value) < 0.01) return;
             
-            const y = value < 0 ? bar.y + bar.height + 15 : bar.y - 5;
-            ctx.fillText(formatCurrency(value, false), bar.x, y);
+            if (value < 0) {
+              // Negative bars: white text with dark background near top of bar
+              const text = formatCurrencySimple(value);
+              const textWidth = ctx.measureText(text).width;
+              // Position near the top of the negative bar (just below the zero line)
+              const labelY = bar.y + 15;
+              
+              // Draw background rectangle
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+              ctx.fillRect(bar.x - textWidth/2 - 3, labelY - 8, textWidth + 6, 16);
+              
+              // Draw white text
+              ctx.fillStyle = '#ffffff';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(text, bar.x, labelY);
+              
+              // Reset
+              ctx.fillStyle = COLORS.darkText;
+              ctx.textBaseline = 'bottom';
+            } else {
+              // Positive bars: black text above
+              ctx.fillText(formatCurrencySimple(value), bar.x, bar.y - 5);
+            }
           });
         });
         
@@ -265,26 +285,61 @@ export function renderChart(calculations, showLabels = true) {
         ctx.save();
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Helper function to draw label with colored box and white background
+        const drawLabelWithBox = (text, x, y, color) => {
+          const padding = 4;
+          const metrics = ctx.measureText(text);
+          const width = metrics.width + padding * 2;
+          const height = 16;
+          
+          // Draw white background
+          ctx.fillStyle = 'white';
+          ctx.fillRect(x - width/2, y - height/2, width, height);
+          
+          // Draw colored border
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x - width/2, y - height/2, width, height);
+          
+          // Draw text
+          ctx.fillStyle = color;
+          ctx.fillText(text, x, y);
+        };
         
         // Label spot rates and forward rate
+        // Dataset 4 = 2Y Spot Rate (Line - Red)
+        // Dataset 5 = 1Y Spot Rate (Point - Green)
+        // Dataset 6 = Forward Rate (Dashed Line - Purple)
+        
+        const spot2Meta = chart.getDatasetMeta(4);
         const spot1Meta = chart.getDatasetMeta(5);
         const forwardMeta = chart.getDatasetMeta(6);
         
+        // 1Y Spot Rate (points)
         spot1Meta.data.forEach((point, index) => {
           const value = chart.data.datasets[5].data[index];
           if (value !== null) {
-            ctx.fillStyle = COLORS.spot1;
-            ctx.fillText(formatPercentage(value), point.x, point.y - 12);
+            drawLabelWithBox(`r₁: ${formatPercentage(value)}`, point.x, point.y - 16, COLORS.spot1);
           }
         });
         
+        // Forward Rate (points)
         forwardMeta.data.forEach((point, index) => {
           const value = chart.data.datasets[6].data[index];
           if (value !== null) {
-            ctx.fillStyle = COLORS.forward;
-            ctx.fillText(formatPercentage(value), point.x, point.y + 20);
+            drawLabelWithBox(`F₁,₂: ${formatPercentage(value)}`, point.x, point.y + 20, COLORS.forward);
           }
         });
+        
+        // 2Y Spot Rate (line) - label the middle point
+        const spot2Data = chart.data.datasets[4].data;
+        const middleIndex = Math.floor(spot2Data.length / 2);
+        if (spot2Meta.data[middleIndex] && spot2Data[middleIndex] !== null) {
+          const point = spot2Meta.data[middleIndex];
+          drawLabelWithBox(`r₂: ${formatPercentage(spot2Data[middleIndex])}`, point.x, point.y - 16, COLORS.spot2);
+        }
         
         ctx.restore();
       }

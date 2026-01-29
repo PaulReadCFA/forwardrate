@@ -59,7 +59,7 @@
 .input-inline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   white-space: nowrap;
 }
 
@@ -73,14 +73,12 @@
 .input-with-suffix-inline {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  width: 7rem;
-  position: relative;
+  gap: 0.25rem;
 }
 
 .input-field-inline {
   flex: 1;
-  width: 100%;
+  width: 5rem;
   padding: 0.4rem 0.5rem;
   border: 1px solid var(--color-gray-300);
   border-radius: 0.375rem;
@@ -90,14 +88,7 @@
 }
 
 .input-suffix-inline {
-  position: absolute;
-  right: 0.4rem;
-  top: 50%;
-  transform: translateY(-50%);
   color: var(--color-gray-500);
-  pointer-events: none;
-  width: 1.2rem;
-  text-align: right;
   font-size: 0.875rem;
   font-weight: 500;
 }

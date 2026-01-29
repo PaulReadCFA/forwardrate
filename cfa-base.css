@@ -421,8 +421,9 @@ kbd {
 .toggle-btn:focus,
 .model-btn:focus-visible,
 .toggle-btn:focus-visible {
-  outline: 2px solid var(--color-blue-interactive);
+  outline: 3px solid var(--color-blue-interactive);
   outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(60, 106, 229, 0.1);
 }
 
 .model-btn.active,
@@ -431,6 +432,7 @@ kbd {
   color: white;
   font-weight: 600;
   border-color: var(--color-blue-interactive);
+  box-shadow: 0 2px 4px rgba(60, 106, 229, 0.3);
 }
 
 .toggle-btn:disabled {
@@ -598,16 +600,13 @@ kbd {
 .input-with-suffix-inline {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  width: 6rem;
-  position: relative;
+  gap: 0.25rem;
 }
 
 .input-field-inline {
   flex: 1;
-  width: 100%;
+  width: 5rem;
   padding: 0.4rem 0.5rem;
-  padding-right: 1.5rem;
   border: 1px solid var(--color-gray-300);
   border-radius: 0.375rem;
   font-size: 0.875rem;
@@ -647,15 +646,9 @@ kbd {
 }
 
 .input-suffix-inline {
-  position: absolute;
-  right: 0.4rem;
-  top: 50%;
-  transform: translateY(-50%);
   color: var(--color-gray-500);
-  pointer-events: none;
-  width: 1.2rem;
-  text-align: right;
   font-size: 0.875rem;
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {
