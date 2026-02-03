@@ -104,7 +104,7 @@ export function renderChart(calculations, showLabels = true) {
         },
         // Interest rate lines and points (right axis)
         {
-          label: '2Y Spot Rate (Line)',
+          label: '2Y Spot (r₂)',
           data: spot2Data,
           type: 'line',
           borderColor: COLORS.spot2,
@@ -115,7 +115,7 @@ export function renderChart(calculations, showLabels = true) {
           order: 1
         },
         {
-          label: '1Y Spot Rate (Point)',
+          label: '1Y Spot (r₁)',
           data: spot1Data,
           type: 'scatter',
           backgroundColor: COLORS.spot1,
@@ -125,7 +125,7 @@ export function renderChart(calculations, showLabels = true) {
           order: 0
         },
         {
-          label: 'Forward Rate F₁,₂ (Points)',
+          label: 'Forward Rate (F₁,₂)',
           data: forwardData,
           type: 'scatter',
           backgroundColor: COLORS.forward,
@@ -189,12 +189,16 @@ export function renderChart(calculations, showLabels = true) {
             color: '#000000',
             font: { weight: '500', size: 12 }
           },
-          grid: { display: false }
+          grid: { 
+            display: true,
+            color: 'rgba(0, 0, 0, 0.1)',
+            lineWidth: 1
+          }
         },
         'y-cash': {
           title: { 
             display: true, 
-            text: 'Cash Flows (USD)',
+            text: 'Cash flows (USD)',
             color: '#000000',
             font: { weight: 'bold', size: 13 }
           },
@@ -204,7 +208,7 @@ export function renderChart(calculations, showLabels = true) {
             color: '#000000',
             font: { weight: '500', size: 12 }
           },
-          grid: { color: 'rgba(0, 0, 0, 0.05)' }
+          grid: { display: false }
         },
         'y-rate': {
           title: { 
@@ -221,7 +225,12 @@ export function renderChart(calculations, showLabels = true) {
             color: '#000000',
             font: { weight: '500', size: 12 }
           },
-          grid: { display: false }
+          grid: { 
+            display: true,
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawOnChartArea: true,
+            drawTicks: true
+          }
         }
       },
       layout: {

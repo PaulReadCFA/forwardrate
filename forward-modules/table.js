@@ -27,8 +27,8 @@ export function renderTable(calculations) {
     <thead>
       <tr>
         <th scope="col" class="text-left">Year</th>
-        <th scope="col" class="text-right">One-Year Strategy</th>
-        <th scope="col" class="text-right">Two-Year Strategy</th>
+        <th scope="col" class="text-right">One-Year Strategy<br>Cash Flows (USD)</th>
+        <th scope="col" class="text-right">Two-Year Strategy<br>Cash Flows (USD)</th>
         <th scope="col" class="text-right">Interest Rates</th>
       </tr>
     </thead>
@@ -68,7 +68,7 @@ export function renderTable(calculations) {
   `;
 
   table.innerHTML = html;
-  table.setAttribute('aria-label', 'Forward rate analysis table. Press Escape to exit table.');
+  table.setAttribute('aria-label', 'Forward rate analysis showing cash flows and interest rates');
   
   announceToScreenReader('Table view loaded with forward rate analysis.');
   setupTableKeyboardEscape();
@@ -78,12 +78,12 @@ function formatStrategy1(cf, isYear0, isYear1, isYear2) {
   let result = '';
   
   if (isYear0) {
-    result = formatCurrency(cf.strategy1Cash);
+    result = formatCurrency(cf.strategy1Cash, false, false);
   } else if (isYear1) {
-    result = `Maturity: ${formatCurrency(cf.strategy1Maturity)}<br>`;
-    result += `Reinvest: ${formatCurrency(cf.strategy1Reinvest)}`;
+    result = `Maturity: ${formatCurrency(cf.strategy1Maturity, false, false)}<br>`;
+    result += `Reinvest: ${formatCurrency(cf.strategy1Reinvest, false, false)}`;
   } else if (isYear2) {
-    result = formatCurrency(cf.strategy1Cash);
+    result = formatCurrency(cf.strategy1Cash, false, false);
   }
   
   return result || '-';
@@ -91,9 +91,9 @@ function formatStrategy1(cf, isYear0, isYear1, isYear2) {
 
 function formatStrategy2(cf, isYear0, isYear2) {
   if (isYear0) {
-    return formatCurrency(cf.strategy2Cash);
+    return formatCurrency(cf.strategy2Cash, false, false);
   } else if (isYear2) {
-    return formatCurrency(cf.strategy2Cash);
+    return formatCurrency(cf.strategy2Cash, false, false);
   }
   return '-';
 }
@@ -108,7 +108,7 @@ function formatRates(cf) {
     rates.push(`<div style="color: #dc2626; margin-bottom: 0.25rem;">r₂: ${formatPercentage(cf.spot2Year)}</div>`);
   }
   if (cf.forwardRate !== null) {
-    rates.push(`<div style="color: #7a46ff;">f(1,1): ${formatPercentage(cf.forwardRate)}</div>`);
+    rates.push(`<div style="color: #7a46ff;">F₁,₂: ${formatPercentage(cf.forwardRate)}</div>`);
   }
   
   return rates.length > 0 ? rates.join('') : '-';

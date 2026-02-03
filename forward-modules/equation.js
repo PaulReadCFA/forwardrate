@@ -22,11 +22,13 @@ export function renderDynamicEquation(calculations, params) {
   // Convert to decimals for display
   const s1 = (spot1Year / 100).toFixed(4);
   const s2 = (spot2Year / 100).toFixed(4);
+  const forwardDecimal = (forwardRate / 100).toFixed(4);
+  const forwardPercent = forwardRate.toFixed(2);
   
-  // Build equation with actual numeric values
+  // Build equation with actual numeric values - show both decimal and percentage
   const mathML = `
     <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
-      $$\\color{#7a46ff}{F_{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#047857}{${s1}})} - 1 = \\color{#7a46ff}{${formatPercentage(forwardRate)}}$$
+      $$\\color{#7a46ff}{F_{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#047857}{${s1}})} - 1 = \\color{#7a46ff}{${forwardDecimal} = ${forwardPercent}\\%}$$
     </div>
   `;
   
@@ -38,7 +40,7 @@ export function renderDynamicEquation(calculations, params) {
   }
   
   // Create screen-reader friendly announcement
-  const announcement = `Implied forward rate f(1,1) equals ${formatPercentage(forwardRate)}. ` +
+  const announcement = `Implied forward rate F 1,2 equals ${forwardDecimal} or ${formatPercentage(forwardRate)}. ` +
     `Calculated as: quantity 1 plus 2-year spot rate ${formatPercentage(spot2Year)}, squared, ` +
     `divided by quantity 1 plus 1-year spot rate ${formatPercentage(spot1Year)}, minus 1.`;
   

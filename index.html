@@ -35,6 +35,14 @@
     </nav>
     
     <main class="content">
+      <!-- JavaScript Required Notice -->
+      <noscript>
+        <div style="background-color: #fef2f2; border: 2px solid #b91c1c; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+          <p style="color: #991b1c; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;">JavaScript Required</p>
+          <p style="color: #7f1d1d; font-size: 0.875rem;">This calculator requires JavaScript to be enabled in your browser. Please enable JavaScript to use the interactive features and calculations.</p>
+        </div>
+      </noscript>
+      
       <!-- Card 0: Static Formula Explanation -->
       <section id="formula-card" class="card">
         <h4 class="card-title">Implied Forward Rate Equation</h4>
@@ -68,8 +76,8 @@
         <div class="card-content">
           <!-- Input controls -->
           <div class="input-section">
-            <p class="sr-only" id="inputHelp">
-              Enter spot rates and the calculator updates results and the chart automatically.
+            <p style="font-size: 0.875rem; color: var(--color-gray-600); margin-bottom: 1rem;">
+              Enter your spot rates below. The calculations and visualizations will update automatically as you change the values.
             </p>
 
             <div class="input-group-inline">
@@ -184,7 +192,7 @@
                role="region"  
                aria-label="Forward rate analysis table"  
                tabindex="-1">
-            <table id="cash-flow-table" class="data-table" aria-describedby="table-note">
+            <table id="cash-flow-table" class="data-table" tabindex="-1">
               <!-- Populated by JavaScript -->
             </table>
           </div>

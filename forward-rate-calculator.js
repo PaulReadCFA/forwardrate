@@ -69,9 +69,9 @@ function setupSkipLinks() {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       setTimeout(() => {
-        const tableContainer = $('#table-container');
-        if (tableContainer) {
-          tableContainer.focus();
+        const tableBtn = $('#table-view-btn');
+        if (tableBtn) {
+          tableBtn.focus();
         }
       }, 400);
     });
