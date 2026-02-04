@@ -39,10 +39,8 @@ export function renderDynamicEquation(calculations, params) {
     MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
   }
   
-  // Create screen-reader friendly announcement
-  const announcement = `Implied forward rate F 1,2 equals ${forwardDecimal} or ${formatPercentage(forwardRate)}. ` +
-    `Calculated as: quantity 1 plus 2-year spot rate ${formatPercentage(spot2Year)}, squared, ` +
-    `divided by quantity 1 plus 1-year spot rate ${formatPercentage(spot1Year)}, minus 1.`;
+  // Create screen-reader friendly announcement - concise update
+  const announcement = `Forward rate: ${forwardPercent}% or ${forwardDecimal} decimal`;
   
   // Update aria-live region for screen readers
   let liveRegion = document.getElementById('equation-live-region');

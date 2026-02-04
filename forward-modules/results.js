@@ -44,9 +44,7 @@ function createForwardRateBox(calculations) {
   box.appendChild(title);
   
   const value = createElement('div', {
-    className: 'result-value',
-    'aria-live': 'polite',
-    'aria-atomic': 'true'
+    className: 'result-value'
   }, formatPercentage(calculations.forwardRate));
   box.appendChild(value);
   
