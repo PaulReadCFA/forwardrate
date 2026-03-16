@@ -32,11 +32,18 @@ export function renderDynamicEquation(calculations, params) {
     </div>
   `;
   
+  // Hide before updating to prevent raw LaTeX flashing during MathJax re-render
+  container.style.visibility = 'hidden';
   container.innerHTML = mathML;
-  
-  // Trigger MathJax to re-render the equation
+
+  // Trigger MathJax to re-render, then reveal once typesetting is complete
   if (window.MathJax) {
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container]);
+    MathJax.Hub.Queue(
+      ["Typeset", MathJax.Hub, container],
+      () => { container.style.visibility = 'visible'; }
+    );
+  } else {
+    container.style.visibility = 'visible';
   }
   
   // Create screen-reader friendly announcement - concise update
