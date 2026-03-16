@@ -1,29 +1,33 @@
 /**
  * Table Rendering Module - Forward Rate Calculator
- * Renders accessible data table for forward rate analysis
+ *
+ * Changes:
+ *  #5  striping already in base CSS; tfoot uses contrasting bg
+ *  #19 italic r / F in interest rates column
+ *  #20 no space between USD and number in no-arbitrage note
+ *  #21 no-arbitrage note lives in HTML (always visible) - table just updates it
  */
 
 import { $, formatCurrency, formatPercentage, announceToScreenReader } from './utils.js';
 
-/**
- * Render forward rate analysis table
- */
-export function renderTable(calculations) {
-  const table = $('#cash-flow-table');
+/** No space after USD (#20) */
+function fmtMoney(value) {
+  const abs = Math.abs(value);
+  const str = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return value < 0 ? `\u2212USD${str}` : `USD${str}`;
+}
 
-  if (!table) {
-    console.error('Table element not found');
-    return;
-  }
+export function renderTable(calculations, announce = false) {
+  const table = $('#cash-flow-table');
+  if (!table) { console.error('Table element not found'); return; }
 
   const cashFlows = calculations.cashFlows;
 
   let html = `
     <caption class="sr-only">
-      Forward rate analysis showing year, one-year strategy cash flows, two-year strategy cash flows, 
-      and interest rates including spot rates and forward rate.
+      Forward rate analysis showing year, one-year strategy cash flows, two-year strategy cash flows,
+      and interest rates including spot rates and implied forward rate.
     </caption>
-
     <thead>
       <tr>
         <th scope="col" class="text-left">Year</th>
@@ -32,10 +36,9 @@ export function renderTable(calculations) {
         <th scope="col" class="text-right">Interest Rates</th>
       </tr>
     </thead>
-
     <tbody>`;
 
-  cashFlows.forEach((cf, index) => {
+  cashFlows.forEach((cf) => {
     const isYear0 = cf.year === 0;
     const isYear1 = cf.year === 1;
     const isYear2 = cf.year === 2;
@@ -43,122 +46,66 @@ export function renderTable(calculations) {
     html += `
       <tr>
         <td class="text-left"><strong>${cf.year}</strong></td>
-        <td class="text-right">
-          ${formatStrategy1(cf, isYear0, isYear1, isYear2)}
-        </td>
-        <td class="text-right">
-          ${formatStrategy2(cf, isYear0, isYear2)}
-        </td>
-        <td class="text-right">
-          ${formatRates(cf)}
-        </td>
+        <td class="text-right">${formatStrategy1(cf, isYear0, isYear1, isYear2)}</td>
+        <td class="text-right">${formatStrategy2(cf, isYear0, isYear2)}</td>
+        <td class="text-right">${formatRates(cf)}</td>
       </tr>`;
   });
 
+  // #20: no space between USD and number in tfoot
   html += `
     </tbody>
-    
     <tfoot>
       <tr>
-        <td colspan="4" class="text-right">
-          <strong>No Arbitrage:</strong> Both strategies yield ${formatCurrency(calculations.strategy1Final)}
+        <td colspan="4" class="text-right" style="padding:0.75rem;">
+          <strong>No Arbitrage:</strong> Both strategies yield ${fmtMoney(calculations.strategy1Final)}
         </td>
       </tr>
-    </tfoot>
-  `;
+    </tfoot>`;
 
   table.innerHTML = html;
   table.setAttribute('aria-label', 'Forward rate analysis showing cash flows and interest rates');
-  
-  announceToScreenReader('Table view loaded with forward rate analysis.');
+
+  // #21: also update always-visible note div
+  const note = document.getElementById('no-arbitrage-note');
+  if (note) {
+    note.style.display = 'block';
+    note.textContent = `No Arbitrage: Both strategies yield ${fmtMoney(calculations.strategy1Final)}`;
+  }
+
+  // Only announce when table is actually visible — avoids misleading SR users in chart view
+  if (announce) {
+    announceToScreenReader('Table updated with new forward rate analysis.');
+  }
   setupTableKeyboardEscape();
 }
 
 function formatStrategy1(cf, isYear0, isYear1, isYear2) {
-  let result = '';
-  
-  if (isYear0) {
-    result = formatCurrency(cf.strategy1Cash, false, false);
-  } else if (isYear1) {
-    result = `Maturity: ${formatCurrency(cf.strategy1Maturity, false, false)}<br>`;
-    result += `Reinvest: ${formatCurrency(cf.strategy1Reinvest, false, false)}`;
-  } else if (isYear2) {
-    result = formatCurrency(cf.strategy1Cash, false, false);
-  }
-  
-  return result || '-';
+  if (isYear0) return fmtMoney(cf.strategy1Cash);
+  if (isYear1) return `Maturity: ${fmtMoney(cf.strategy1Maturity)}<br>Reinvest: ${fmtMoney(cf.strategy1Reinvest)}`;
+  if (isYear2) return fmtMoney(cf.strategy1Cash);
+  return '&ndash;';
 }
 
 function formatStrategy2(cf, isYear0, isYear2) {
-  if (isYear0) {
-    return formatCurrency(cf.strategy2Cash, false, false);
-  } else if (isYear2) {
-    return formatCurrency(cf.strategy2Cash, false, false);
-  }
-  return '-';
+  if (isYear0) return fmtMoney(cf.strategy2Cash);
+  if (isYear2) return fmtMoney(cf.strategy2Cash);
+  return '&ndash;';
 }
 
+/** #19: italic r and F in table rates column */
 function formatRates(cf) {
   const rates = [];
-  
-  if (cf.spot1Year !== null) {
-    rates.push(`<div style="color: #047857; margin-bottom: 0.25rem;">r₁: ${formatPercentage(cf.spot1Year)}</div>`);
-  }
-  if (cf.spot2Year !== null) {
-    rates.push(`<div style="color: #dc2626; margin-bottom: 0.25rem;">r₂: ${formatPercentage(cf.spot2Year)}</div>`);
-  }
-  if (cf.forwardRate !== null) {
-    rates.push(`<div style="color: #7a46ff;">F₁,₂: ${formatPercentage(cf.forwardRate)}</div>`);
-  }
-  
-  return rates.length > 0 ? rates.join('') : '-';
-}
-
-function getStrategy1Tooltip(cf, isYear0, isYear1, isYear2) {
-  if (isYear0) {
-    return 'Initial investment of USD 100';
-  } else if (isYear1) {
-    return `USD 100 invested at 1-year spot rate matures to ${formatCurrency(cf.strategy1Maturity)}, then reinvested at forward rate`;
-  } else if (isYear2) {
-    return `Final value after reinvesting at forward rate f(1,1) = ${formatCurrency(cf.strategy1Cash)}`;
-  }
-  return '';
-}
-
-function getStrategy2Tooltip(cf, isYear0, isYear2) {
-  if (isYear0) {
-    return 'Initial investment of USD 100';
-  } else if (isYear2) {
-    return `Final value after 2 years at 2-year spot rate = ${formatCurrency(cf.strategy2Cash)}`;
-  }
-  return 'No cash flow in year 1';
-}
-
-function getRatesTooltip(cf) {
-  const tooltips = [];
-  
-  if (cf.spot1Year !== null) {
-    tooltips.push(`1-year spot rate: ${formatPercentage(cf.spot1Year)}`);
-  }
-  if (cf.spot2Year !== null) {
-    tooltips.push(`2-year spot rate: ${formatPercentage(cf.spot2Year)}`);
-  }
-  if (cf.forwardRate !== null) {
-    tooltips.push(`Forward rate f(1,1): ${formatPercentage(cf.forwardRate)} - the implied 1-year rate starting in year 1`);
-  }
-  
-  return tooltips.join('. ');
+  if (cf.spot1Year  !== null) rates.push(`<div style="color:#047857; margin-bottom:0.25rem;"><em>r</em>\u2081: ${formatPercentage(cf.spot1Year)}</div>`);
+  if (cf.spot2Year  !== null) rates.push(`<div style="color:#dc2626; margin-bottom:0.25rem;"><em>r</em>\u2082: ${formatPercentage(cf.spot2Year)}</div>`);
+  if (cf.forwardRate !== null) rates.push(`<div style="color:#7a46ff;"><em>F</em>\u2081,\u2082: ${formatPercentage(cf.forwardRate)}</div>`);
+  return rates.length > 0 ? rates.join('') : '&ndash;';
 }
 
 function setupTableKeyboardEscape() {
   const table = document.getElementById('cash-flow-table');
-  
   if (!table) return;
-  
-  if (table._escapeListener) {
-    table.removeEventListener('keydown', table._escapeListener);
-  }
-  
+  if (table._escapeListener) table.removeEventListener('keydown', table._escapeListener);
   const escapeListener = (e) => {
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -169,7 +116,6 @@ function setupTableKeyboardEscape() {
       }
     }
   };
-  
   table._escapeListener = escapeListener;
   table.addEventListener('keydown', escapeListener);
 }

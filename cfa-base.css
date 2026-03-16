@@ -89,14 +89,14 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* #2: Lato font throughout */
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--color-gray-50);
   color: var(--color-gray-800);
   line-height: 1.5;
   padding: 0 1.5rem 1.5rem;
   min-height: 100vh;
-  /* Smooth font scaling for zoom */
-  font-size: clamp(0.875rem, 1vw + 0.5rem, 1rem);
+  font-size: 1rem; /* #2: 16px base */
 }
 
 /* Reduce body padding at narrow widths */
@@ -310,28 +310,28 @@ kbd {
 }
 
 .card-title {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.25rem;
+  /* #2: Lato 24px weight 400 for headings */
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
   color: var(--color-gray-800);
   margin-bottom: 0.75rem;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.01em;
 }
 
 @media (max-width: 640px) {
   .card-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
   .card-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 }
 
 .card-content {
-  font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.8);
   overflow: visible;
 }
@@ -518,7 +518,7 @@ kbd {
 .input-field {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-gray-300);
+  border: 1px solid #8b93a7; /* #1: darkened from gray-300 */
   border-radius: 0.375rem;
   font-size: 0.875rem;
   transition: all 0.2s;
@@ -526,7 +526,7 @@ kbd {
 }
 
 .input-field:hover {
-  border-color: var(--color-gray-400);
+  border-color: var(--color-gray-500);
 }
 
 .input-field:focus {
@@ -607,7 +607,7 @@ kbd {
   flex: 1;
   width: 5rem;
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--color-gray-300);
+  border: 1px solid #8b93a7; /* #1: darkened */
   border-radius: 0.375rem;
   font-size: 0.875rem;
   text-align: right;
@@ -616,7 +616,7 @@ kbd {
 }
 
 .input-field-inline:hover {
-  border-color: var(--color-gray-500);
+  border-color: var(--color-gray-600);
 }
 
 .input-field-inline:focus {
@@ -707,7 +707,6 @@ kbd {
 }
 
 .equation-intro {
-  font-size: 0.875rem;
   color: var(--color-gray-600);
   margin-bottom: 1rem;
   text-align: left;
@@ -1157,7 +1156,7 @@ math[display="block"] {
 }
 
 .data-table tbody tr:nth-child(even) {
-  background-color: var(--color-gray-50);
+  background-color: #f7f8fa; /* passes 4.5:1 for green, red and purple rate text */
 }
 
 .data-table tbody tr:hover {
@@ -1774,5 +1773,15 @@ math[display="block"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Explicitly disable transitions on interactive elements */
+  .toggle-btn,
+  .model-btn,
+  .skip-link,
+  .toggle-section-btn,
+  .input-field,
+  .input-field-inline {
+    transition: none !important;
   }
 }

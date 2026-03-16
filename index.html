@@ -5,112 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Implied Forward Rate Calculator | CFA Institute</title>
   <meta name="description" content="Interactive implied forward rate calculator demonstrating no-arbitrage pricing">
-  
+
+  <!-- Google Fonts: Lato -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Styles -->
   <link rel="stylesheet" href="cfa-base.css">
   <link rel="stylesheet" href="forward-rate-specific.css">
-  
-  <!-- MathJax for equation rendering -->
+
+  <!-- MathJax for dynamic equation rendering -->
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-      menuSettings: { 
-        inTabOrder: false 
-      },
-      "HTML-CSS": {
-        mtextFontInherit: true
-      }
+      menuSettings: { inTabOrder: false },
+      "HTML-CSS": { mtextFontInherit: true }
     });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-  
+
   <!-- Chart.js for visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- Skip Links for Accessibility -->
+    <!-- Skip Links -->
     <nav role="navigation" aria-label="Skip links">
       <a href="#calculator" class="skip-link">Skip to data entry</a>
       <a href="#visualizer" class="skip-link" id="skip-to-table">Skip to data table</a>
     </nav>
-    
+
     <main class="content">
-      <!-- JavaScript Required Notice -->
       <noscript>
         <div style="background-color: #fef2f2; border: 2px solid #b91c1c; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
           <p style="color: #991b1c; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;">JavaScript Required</p>
-          <p style="color: #7f1d1d; font-size: 0.875rem;">This calculator requires JavaScript to be enabled in your browser. Please enable JavaScript to use the interactive features and calculations.</p>
+          <p style="color: #7f1d1d; font-size: 0.875rem;">This calculator requires JavaScript. Please enable JavaScript to use the interactive features.</p>
         </div>
       </noscript>
-      
-      <!-- Card 0: Static Formula Explanation -->
-      <section id="formula-card" class="card">
-        <h4 class="card-title">Implied Forward Rate Equation</h4>
-        
-        <!-- Static equation -->
-        <div class="equation-container" role="region" aria-label="Implied forward rate formula">
-          <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
-            $$\color{#7a46ff}{F_{1,2}} = \frac{(1+\color{#dc2626}{r_2})^2}{(1+\color{#047857}{r_1})} - 1$$
-          </div>
-        </div>
-      </section>
 
-      <!-- Card 1: Dynamic Equation with User Values -->
-      <section id="equation-card" class="card">
-        <h4 class="card-title">Implied Forward Rate Equation with Your Inputs</h4>
-        <p class="equation-intro">
-          This equation calculates the forward rate that ensures no arbitrage between investing strategies.
-        </p>
-        
-        <!-- Dynamic equation with actual values -->
-        <div class="equation-container" role="region" aria-label="Forward rate calculation with your values" id="dynamic-equation-container" tabindex="0" style="height: 120px; min-height: 120px; display: flex; align-items: center; justify-content: center;">
-          <div id="dynamic-mathml-equation">
-            <!-- Populated by JavaScript -->
-          </div>
-        </div>
-      </section>
-
-      <!-- Card 2: Calculator -->
+      <!-- Card 1: Calculator -->
       <section class="card" id="calculator" tabindex="-1">
         <h4 class="card-title">Implied Forward Rate Calculator</h4>
         <div class="card-content">
-          <!-- Input controls -->
           <div class="input-section">
-            <p style="font-size: 0.875rem; color: var(--color-gray-600); margin-bottom: 1rem;">
+            <p style="font-size: 1rem; color: var(--color-gray-600); margin-bottom: 1rem;">
               Enter your spot rates below. The calculations and visualizations will update automatically as you change the values.
             </p>
 
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="spot-1year" class="input-label-inline">
-                  1-year spot rate <span style="color: #047857;">(r₁)</span>:
+                  One-year spot rate (<em style="color: #047857; font-weight: 700;">r</em>&#8321;):
                 </label>
                 <div class="input-with-suffix-inline">
-                  <input 
-                    type="number" 
-                    id="spot-1year" 
-                    class="input-field-inline"
-                    min="0" max="50" step="0.1" value="6.3">
+                  <input type="number" id="spot-1year" class="input-field-inline"
+                    min="0" max="50" step="0.1" value="6.3" inputmode="decimal">
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
 
               <div class="input-inline">
                 <label for="spot-2year" class="input-label-inline">
-                  2-year spot rate <span style="color: #dc2626;">(r₂)</span>:
+                  Two-year spot rate (<em style="color: #dc2626; font-weight: 700;">r</em>&#8322;):
                 </label>
                 <div class="input-with-suffix-inline">
-                  <input 
-                    type="number" 
-                    id="spot-2year" 
-                    class="input-field-inline"
-                    min="0" max="50" step="0.1" value="8.0">
+                  <input type="number" id="spot-2year" class="input-field-inline"
+                    min="0" max="50" step="0.1" value="8.0" inputmode="decimal">
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
             </div>
 
-            <!-- Validation summary -->
             <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
               <div class="validation-title">Please correct the following:</div>
               <ul id="validation-list"></ul>
@@ -119,100 +84,100 @@
         </div>
       </section>
 
-      <!-- Card 3: Visualizer (Chart/Table) -->
+      <!-- Card 2: Dynamic Equation -->
+      <section id="equation-card" class="card">
+        <h4 class="card-title">Implied Forward Rate Equation</h4>
+        <p class="equation-intro">
+          Using your inputs, this equation calculates the forward rate that ensures no arbitrage between investing strategies.
+        </p>
+        <div class="equation-container" role="region" aria-label="Forward rate calculation with your values"
+             id="dynamic-equation-container" tabindex="0"
+             style="height: 120px; min-height: 120px; display: flex; align-items: center; justify-content: center;">
+          <div id="dynamic-mathml-equation"></div>
+        </div>
+      </section>
+
+      <!-- Card 3: Visualizer -->
       <section class="card" id="visualizer" tabindex="-1">
         <h4 class="card-title">Implied Forward Rate Analysis</h4>
         <div class="card-content">
-          <!-- View toggle buttons -->
+
+          <!-- view-controls: legend left, buttons right -->
           <div class="view-controls">
-            <div class="legend" id="chart-legend" role="list" aria-label="Chart legend">
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: #3c6ae5;"></span>
-                One-year strategy
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: #ea792d;"></span>
-                Two-year strategy
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: #047857;"></span>
-                1Y Spot r₁
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
-                2Y Spot r₂
-              </span>
-              <span class="legend-item" role="listitem">
-                <span class="legend-color" style="background-color: #7a46ff;"></span>
-                Forward F₁,₂
-              </span>
+            <div role="region" aria-label="Chart legend" id="chart-legend-region">
+              <ul class="legend" id="chart-legend" role="list" aria-label="Chart legend">
+                <li class="legend-item" role="listitem">
+                  <span class="legend-color" style="background-color: #3c6ae5;"></span>
+                  One-year strategy
+                </li>
+                <li class="legend-item" role="listitem">
+                  <span class="legend-color" style="background-color: #ea792d;"></span>
+                  Two-year strategy
+                </li>
+                <li class="legend-item" role="listitem">
+                  <span class="legend-color" style="background-color: #047857; border-radius: 50%;"></span>
+                  1Y Spot (<em style="color: #047857; font-weight: 700;">r</em>&#8321;)
+                </li>
+                <li class="legend-item" role="listitem">
+                  <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
+                  2Y Spot (<em style="color: #dc2626; font-weight: 700;">r</em>&#8322;)
+                </li>
+                <li class="legend-item" role="listitem">
+                  <span class="legend-color" style="background-color: #7a46ff; border-radius: 50%;"></span>
+                  Forward (<em style="color: #7a46ff; font-weight: 700;">F</em>&#8321;,&#8322;)
+                </li>
+              </ul>
             </div>
-            
+
             <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
-              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true" aria-label="Click Chart">
-                Chart
-              </button>
-              <button id="table-view-btn" class="toggle-btn" aria-pressed="false" aria-label="Click Table">
-                Table
-              </button>
+              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true" aria-label="Chart view">Chart</button>
+              <button id="table-view-btn" class="toggle-btn" aria-pressed="false" aria-label="Table view">Table</button>
             </div>
           </div>
 
-          <!-- Screen reader announcement for view changes -->
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
-          <!-- Hidden chart description -->
           <div class="sr-only" id="forward-chart-desc">
             <h4 id="forward-chart-title">Implied forward rate analysis over time</h4>
-            <p>
-              This chart compares two investment strategies to demonstrate no-arbitrage pricing.
-              The one-year strategy invests for 1 year, then reinvests at the forward rate.
-              The two-year strategy invests for the full 2 years. Both strategies yield the same final value,
-              confirming the forward rate is correctly priced.
-            </p>
-            <p>
-              Keyboard navigation: Tab to focus the chart. Use Left and Right arrow keys to move between periods.
-              Press Home to jump to year 0, or End to jump to year 2.
-              Each period will announce its cash flows and interest rates.
-            </p>
+            <p>This chart compares two investment strategies to demonstrate no-arbitrage pricing.
+               The one-year strategy invests for 1 year, then reinvests at the forward rate.
+               The two-year strategy invests for the full 2 years. Both strategies yield the same final value.</p>
+            <p>When focused, use Left and Right arrow keys to move between periods.
+               Press Home to jump to year 0, or End to jump to year 2.</p>
           </div>
 
-          <!-- Chart container -->
-          <div id="chart-container" class="chart-wrapper" 
-               role="region" 
-               aria-labelledby="forward-chart-title" 
-               aria-describedby="forward-chart-desc"
-               tabindex="-1"
-               style="height: 32rem;">
+          <!-- Chart -->
+          <div id="chart-container" class="chart-wrapper"
+               role="region" aria-labelledby="forward-chart-title" aria-describedby="forward-chart-desc"
+               tabindex="-1" style="height: 32rem;">
             <canvas id="forward-chart"></canvas>
           </div>
 
-          <!-- Table container -->
+          <!-- Table -->
           <div id="table-container" class="table-wrapper" style="display: none;"
-               role="region"  
-               aria-label="Forward rate analysis table"  
-               tabindex="-1">
-            <table id="cash-flow-table" class="data-table" tabindex="-1">
-              <!-- Populated by JavaScript -->
-            </table>
+               role="region" aria-label="Forward rate analysis table" tabindex="-1">
+            <table id="cash-flow-table" class="data-table" tabindex="-1"></table>
+          </div>
+
+          <!-- No Arbitrage note — always visible in both chart and table views -->
+          <div id="no-arbitrage-note" style="display:none; margin-top:0.75rem; padding:0.625rem 1rem;
+               background:var(--color-bg-blue); border-radius:0.375rem; font-size:0.875rem;
+               font-weight:600; color:var(--color-primary-dark-blue); text-align:right;">
           </div>
         </div>
       </section>
 
-      <!-- Card 4: Results & Analysis -->
+      <!-- Card 4: Results -->
       <section class="card" id="results-card">
         <h4 class="card-title">Results and Analysis</h4>
         <div class="card-content">
-          <div id="results-content">
-            <!-- Populated by JavaScript -->
-          </div>
+          <div id="results-content"></div>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- JavaScript Modules -->
   <script type="module" src="forward-rate-calculator.js"></script>
 </body>
 </html>

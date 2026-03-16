@@ -1,125 +1,114 @@
 /**
  * Results Display Module - Forward Rate Calculator
- * Renders forward rate and strategy comparison results
+ *
+ * Changes:
+ *  #14 no space between USD and number
+ *  #15 @ -> "at"
+ *  #25 description: "The one-year rate starting in Year 1"
+ *  #26 ensure subscript 2 is bold in purple box title
  */
 
 import { formatCurrency, formatPercentage, createElement } from './utils.js';
 
-/**
- * Render results and analysis section
- */
-export function renderResults(calculations, params) {
-  const container = document.getElementById('results-content');
-  
-  if (!container) {
-    console.error('Results container not found');
-    return;
-  }
-  
-  container.innerHTML = '';
-  
-  // Forward rate result box
-  const forwardBox = createForwardRateBox(calculations);
-  container.appendChild(forwardBox);
-  
-  // Strategy 1 box
-  const strategy1Box = createStrategy1Box(calculations, params);
-  container.appendChild(strategy1Box);
-  
-  // Strategy 2 box
-  const strategy2Box = createStrategy2Box(calculations, params);
-  container.appendChild(strategy2Box);
+/** #14/#17: format with no space after USD */
+function fmtMoney(value) {
+  const abs = Math.abs(value);
+  const str = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return value < 0 ? `\u2212USD${str}` : `USD${str}`;
 }
 
-/**
- * Create forward rate result box
- */
+export function renderResults(calculations, params) {
+  const container = document.getElementById('results-content');
+  if (!container) { console.error('Results container not found'); return; }
+  container.innerHTML = '';
+
+  container.appendChild(createForwardRateBox(calculations));
+  container.appendChild(createStrategy1Box(calculations, params));
+  container.appendChild(createStrategy2Box(calculations, params));
+
+  // #21: update always-visible no-arbitrage note
+  const note = document.getElementById('no-arbitrage-note');
+  if (note) {
+    note.style.display = 'block';
+    // #20: no space between USD and number
+    note.textContent = `No Arbitrage: Both strategies yield ${fmtMoney(calculations.strategy1Final)}`;
+  }
+}
+
 function createForwardRateBox(calculations) {
   const box = createElement('div', { className: 'result-box forward-rate' });
-  
-  const title = createElement('h5', { 
-    className: 'result-title',
-    style: 'color: #5b21b6; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;'
-  }, 'Implied Forward Rate F₁,₂');
+
+  // #26: use innerHTML so we can force uniform bold on the subscript characters
+  const title = document.createElement('h5');
+  title.style.cssText = 'color: #5b21b6; font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem;';
+  // Wrap everything in a span with consistent weight
+  title.innerHTML = '<span style="font-weight:700;">Implied Forward Rate <em>F</em><span style="font-weight:700; font-size:0.875em; vertical-align:sub;">1,2</span></span>';
   box.appendChild(title);
-  
-  const value = createElement('div', {
-    className: 'result-value'
-  }, formatPercentage(calculations.forwardRate));
+
+  const value = createElement('div', { className: 'result-value' }, formatPercentage(calculations.forwardRate));
   box.appendChild(value);
-  
-  const description = createElement('div', { 
-    className: 'result-description',
-    style: 'font-size: 0.875rem; margin-top: 0.5rem; color: #374151;'
-  }, 'The 1-year rate starting in year 1');
+
+  // #25: "The one-year rate starting in Year 1"
+  const description = document.createElement('div');
+  description.className = 'result-description';
+  description.style.cssText = 'font-size: 0.875rem; margin-top: 0.5rem; color: #374151;';
+  description.textContent = 'The one-year rate starting in Year 1';
   box.appendChild(description);
-  
+
   return box;
 }
 
-/**
- * Create one-year strategy box
- */
 function createStrategy1Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy' });
-  
-  const title = createElement('h5', { 
-    className: 'result-title',
+
+  const title = createElement('h5', {
     style: 'color: #1e40af; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;'
   }, 'One-Year Strategy');
   box.appendChild(title);
-  
+
   const details = createElement('div', { className: 'strategy-details' });
-  
-  // Year 0 to 1
-  const step1 = createElement('div', { style: 'margin-bottom: 0.5rem;' });
-  step1.innerHTML = `<strong>Year 0 → 1:</strong> USD 100 @ ${formatPercentage(params.spot1Year)} = ${formatCurrency(calculations.strategy1Year1Value)}`;
+
+  // #14: no space; #15: "at" instead of @
+  const step1 = document.createElement('div');
+  step1.style.marginBottom = '0.5rem';
+  step1.innerHTML = `<strong>Year 0 → 1:</strong> ${fmtMoney(100)} at ${formatPercentage(params.spot1Year)} = ${fmtMoney(calculations.strategy1Year1Value)}`;
   details.appendChild(step1);
-  
-  // Year 1 to 2
-  const step2 = createElement('div', { style: 'margin-bottom: 0.5rem;' });
-  step2.innerHTML = `<strong>Year 1 → 2:</strong> ${formatCurrency(calculations.strategy1Year1Value)} @ ${formatPercentage(calculations.forwardRate)} = ${formatCurrency(calculations.strategy1Final)}`;
+
+  const step2 = document.createElement('div');
+  step2.style.marginBottom = '0.5rem';
+  step2.innerHTML = `<strong>Year 1 → 2:</strong> ${fmtMoney(calculations.strategy1Year1Value)} at ${formatPercentage(calculations.forwardRate)} = ${fmtMoney(calculations.strategy1Final)}`;
   details.appendChild(step2);
-  
-  // Final value
-  const final = createElement('div', { 
-    style: 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #3c6ae5; color: #1e40af; font-size: 1rem;'
-  });
-  final.innerHTML = `<strong>Final Value:</strong> ${formatCurrency(calculations.strategy1Final)}`;
+
+  const final = document.createElement('div');
+  final.style.cssText = 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #3c6ae5; color: #1e40af; font-size: 1rem;';
+  final.innerHTML = `<strong>Final Value:</strong> ${fmtMoney(calculations.strategy1Final)}`;
   details.appendChild(final);
-  
+
   box.appendChild(details);
-  
   return box;
 }
 
-/**
- * Create two-year strategy box
- */
 function createStrategy2Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy-twoyear' });
-  
-  const title = createElement('h5', { 
-    className: 'result-title',
+
+  const title = createElement('h5', {
     style: 'color: #c2410c; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;'
   }, 'Two-Year Strategy');
   box.appendChild(title);
-  
+
   const details = createElement('div', { className: 'strategy-details' });
-  
-  // Investment description
-  const desc = createElement('div', { style: 'margin-bottom: 0.5rem;' });
-  desc.innerHTML = `<strong>Year 0 → 2:</strong> USD 100 @ ${formatPercentage(params.spot2Year)} annually`;
+
+  // #14/#15
+  const desc = document.createElement('div');
+  desc.style.marginBottom = '0.5rem';
+  desc.innerHTML = `<strong>Year 0 → 2:</strong> ${fmtMoney(100)} at ${formatPercentage(params.spot2Year)} annually`;
   details.appendChild(desc);
-  
-  // Final value
-  const final = createElement('div', { 
-    style: 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #ea792d; color: #c2410c; font-size: 1rem;'
-  });
-  final.innerHTML = `<strong>Final Value:</strong> ${formatCurrency(calculations.strategy2Final)}`;
+
+  const final = document.createElement('div');
+  final.style.cssText = 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #ea792d; color: #c2410c; font-size: 1rem;';
+  final.innerHTML = `<strong>Final Value:</strong> ${fmtMoney(calculations.strategy2Final)}`;
   details.appendChild(final);
-  
+
   box.appendChild(details);
-  
   return box;
 }

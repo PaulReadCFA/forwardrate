@@ -40,6 +40,13 @@ function init() {
   
   subscribe(handleStateChange);
   
+  // Default to table view when prefers-reduced-motion is set —
+  // this strongly correlates with assistive technology use, and the
+  // table is a far more accessible starting point than the canvas chart.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    switchView('table', false);
+  }
+  
   updateCalculations();
   runSelfTests();
   
@@ -183,7 +190,7 @@ function switchView(view, moveFocus = true) {
   const tableBtn = $('#table-view-btn');
   const chartContainer = $('#chart-container');
   const tableContainer = $('#table-container');
-  const legend = $('#chart-legend');
+  const legendRegion = $('#chart-legend-region'); // #3: legend now in own region
   
   setState({ viewMode: view });
   
@@ -195,7 +202,7 @@ function switchView(view, moveFocus = true) {
     
     chartContainer.style.display = 'block';
     tableContainer.style.display = 'none';
-    legend.style.visibility = 'visible';
+    if (legendRegion) legendRegion.style.visibility = 'visible';
     
     announceToScreenReader('Chart view active');
     if (moveFocus) {
@@ -210,7 +217,7 @@ function switchView(view, moveFocus = true) {
     
     tableContainer.style.display = 'block';
     chartContainer.style.display = 'none';
-    legend.style.visibility = 'hidden';
+    if (legendRegion) legendRegion.style.visibility = 'hidden';
     
     announceToScreenReader('Table view active');
     if (moveFocus) {
@@ -230,6 +237,8 @@ function handleStateChange(newState) {
     return;
   }
   
+  // #8: renderResults does NOT announce to screen reader (results are visible on screen,
+  // announcing them on every change would be excessively verbose)
   renderResults(forwardCalculations, {
     spot1Year: newState.spot1Year,
     spot2Year: newState.spot2Year
@@ -244,8 +253,9 @@ function handleStateChange(newState) {
     const showLabels = shouldShowLabels();
     renderChart(forwardCalculations, showLabels);
   }
-  
-  renderTable(forwardCalculations);
+
+  // Always re-render table data, but only announce to screen reader if table is actually visible
+  renderTable(forwardCalculations, viewMode === 'table');
 }
 
 // =============================================================================
@@ -326,22 +336,22 @@ function runSelfTests() {
       if (test.expected.forwardApprox !== undefined) {
         const diff = Math.abs(result.forwardRate - test.expected.forwardApprox);
         if (diff <= 0.1) {
-          console.log(`âœ“ ${test.name} passed`);
+          console.log(`✓ ${test.name} passed`);
         } else {
-          console.warn(`âœ— ${test.name} failed: expected ~${test.expected.forwardApprox}%, got ${result.forwardRate.toFixed(2)}%`);
+          console.warn(`✗ ${test.name} failed: expected ~${test.expected.forwardApprox}%, got ${result.forwardRate.toFixed(2)}%`);
         }
       }
       
       if (test.expected.strategiesEqual) {
         const diff = Math.abs(result.strategy1Final - result.strategy2Final);
         if (diff < 0.01) {
-          console.log(`âœ“ ${test.name} passed: strategies equal`);
+          console.log(`✓ ${test.name} passed: strategies equal`);
         } else {
-          console.warn(`âœ— ${test.name} failed: strategy values differ by $${diff.toFixed(2)}`);
+          console.warn(`✗ ${test.name} failed: strategy values differ by $${diff.toFixed(2)}`);
         }
       }
     } catch (error) {
-      console.error(`âœ— ${test.name} threw error:`, error);
+      console.error(`✗ ${test.name} threw error:`, error);
     }
   });
   
