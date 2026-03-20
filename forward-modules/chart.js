@@ -198,8 +198,8 @@ export function renderChart(calculations, showLabels = true) {
           title: { display: true, text: 'Interest rate %', color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
           position: 'right',
           min: 0,
-          max: Math.max(10, calculations.forwardRate * 1.3),
-          ticks: { callback: (v) => v.toFixed(1), color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          max: Math.ceil(Math.max(10, calculations.forwardRate * 1.3)),
+          ticks: { callback: (v) => v.toFixed(1), stepSize: 1, color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
           grid: { display: true, color: 'rgba(0,0,0,0.05)', drawOnChartArea: true, drawTicks: true }
         }
       },
