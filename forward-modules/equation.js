@@ -36,14 +36,25 @@ export function renderDynamicEquation(calculations, params) {
   container.style.visibility = 'hidden';
   container.innerHTML = mathML;
 
-  // Trigger MathJax to re-render, then reveal once typesetting is complete
+  // After MathJax renders: reveal and update aria-label with the computed result
+  // so SR users hear the full equation result on first tab — no input change needed
   if (window.MathJax) {
     MathJax.Hub.Queue(
       ["Typeset", MathJax.Hub, container],
-      () => { container.style.visibility = 'visible'; }
+      () => {
+        container.style.visibility = 'visible';
+        container.setAttribute(
+          'aria-label',
+          `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
+        );
+      }
     );
   } else {
     container.style.visibility = 'visible';
+    container.setAttribute(
+      'aria-label',
+      `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
+    );
   }
   
   // Create screen-reader friendly announcement - concise update
