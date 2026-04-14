@@ -47,15 +47,20 @@
       <section class="card" id="calculator" tabindex="-1">
         <h4 class="card-title">Implied Forward Rate Calculator</h4>
         <div class="card-content">
+          <p class="equation-intro">
+            Enter your spot rates below. The calculations and visualizations will update automatically as you change the values.
+          </p>
+
           <div class="input-section">
-            <p style="font-size: 1rem; color: var(--color-gray-600); margin-bottom: 1rem;">
-              Enter your spot rates below. The calculations and visualizations will update automatically as you change the values.
-            </p>
+            <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
+              <div class="validation-title">Please correct the following:</div>
+              <ul id="validation-list"></ul>
+            </div>
 
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="spot-1year" class="input-label-inline">
-                  One-year spot rate (<em style="color: #047857; font-weight: 700;">r</em>&#8321;):
+                  One-year spot rate (<span style="color: #047857; font-weight: 700;"><i>r</i></span><sub>1</sub>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input type="number" id="spot-1year" class="input-field-inline"
@@ -66,7 +71,7 @@
 
               <div class="input-inline">
                 <label for="spot-2year" class="input-label-inline">
-                  Two-year spot rate (<em style="color: #dc2626; font-weight: 700;">r</em>&#8322;):
+                  Two-year spot rate (<span style="color: #dc2626; font-weight: 700;"><i>r</i></span><sub>2</sub>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input type="number" id="spot-2year" class="input-field-inline"
@@ -74,11 +79,6 @@
                   <span class="input-suffix-inline">%</span>
                 </div>
               </div>
-            </div>
-
-            <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
-              <div class="validation-title">Please correct the following:</div>
-              <ul id="validation-list"></ul>
             </div>
           </div>
         </div>
@@ -108,23 +108,23 @@
               <ul class="legend" id="chart-legend" role="list" aria-label="Chart legend">
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #3c6ae5;"></span>
-                  One-year strategy
+                  <span class="legend-item-label">One-year strategy</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #ea792d;"></span>
-                  Two-year strategy
+                  <span class="legend-item-label">Two-year strategy</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #047857; border-radius: 50%;"></span>
-                  1Y Spot (<em style="color: #047857; font-weight: 700;">r</em>&#8321;)
+                  <span class="legend-item-label">1Y Spot (<span style="color: #047857; font-weight: 700;"><i>r</i></span><sub>1</sub>)</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
-                  2Y Spot (<em style="color: #dc2626; font-weight: 700;">r</em>&#8322;)
+                  <span class="legend-item-label">2Y Spot (<span style="color: #dc2626; font-weight: 700;"><i>r</i></span><sub>2</sub>)</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #7a46ff; border-radius: 50%;"></span>
-                  Forward (<em style="color: #7a46ff; font-weight: 700;">F</em>&#8321;,&#8322;)
+                  <span class="legend-item-label">Forward (<span style="color: #7a46ff; font-weight: 700;"><i>F</i></span><sub>1,2</sub>)</span>
                 </li>
               </ul>
             </div>

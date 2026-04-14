@@ -5,7 +5,7 @@
  *  #14 no space between USD and number
  *  #15 @ -> "at"
  *  #25 description: "The one-year rate starting in Year 1"
- *  #26 ensure subscript 2 is bold in purple box title
+ *  #26 purple box title: F coloured, subscript 1,2 body text (CSS .forward-rate-result-sub)
  */
 
 import { formatCurrency, formatPercentage, createElement } from './utils.js';
@@ -40,9 +40,9 @@ function createForwardRateBox(calculations) {
 
   // #26: use innerHTML so we can force uniform bold on the subscript characters
   const title = document.createElement('h5');
-  title.style.cssText = 'color: #5b21b6; font-size: 1.125rem; font-weight: 700; margin-bottom: 0.75rem;';
+  title.style.cssText = 'font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem;';
   // Wrap everything in a span with consistent weight
-  title.innerHTML = '<span style="font-weight:700;">Implied Forward Rate <em>F</em><span style="font-weight:700; font-size:0.875em; vertical-align:sub;">1,2</span></span>';
+  title.innerHTML = '<span style="font-weight:700;"><span style="color:#5b21b6;">Implied Forward Rate <em>F</em></span><sub class="forward-rate-result-sub">1,2</sub></span>';
   box.appendChild(title);
 
   const value = createElement('div', { className: 'result-value' }, formatPercentage(calculations.forwardRate));
@@ -62,7 +62,7 @@ function createStrategy1Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy' });
 
   const title = createElement('h5', {
-    style: 'color: #1e40af; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;'
+    style: 'color: #1e40af; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;'
   }, 'One-Year Strategy');
   box.appendChild(title);
 
@@ -80,7 +80,7 @@ function createStrategy1Box(calculations, params) {
   details.appendChild(step2);
 
   const final = document.createElement('div');
-  final.style.cssText = 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #3c6ae5; color: #1e40af; font-size: 1rem;';
+  final.className = 'forward-rate-strategy-final forward-rate-strategy-final--one-year';
   final.innerHTML = `<strong>Final Value:</strong> ${fmtMoney(calculations.strategy1Final)}`;
   details.appendChild(final);
 
@@ -92,7 +92,7 @@ function createStrategy2Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy-twoyear' });
 
   const title = createElement('h5', {
-    style: 'color: #c2410c; font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;'
+    style: 'color: #c2410c; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;'
   }, 'Two-Year Strategy');
   box.appendChild(title);
 
@@ -105,7 +105,7 @@ function createStrategy2Box(calculations, params) {
   details.appendChild(desc);
 
   const final = document.createElement('div');
-  final.style.cssText = 'font-weight: 600; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #ea792d; color: #c2410c; font-size: 1rem;';
+  final.className = 'forward-rate-strategy-final forward-rate-strategy-final--two-year';
   final.innerHTML = `<strong>Final Value:</strong> ${fmtMoney(calculations.strategy2Final)}`;
   details.appendChild(final);
 

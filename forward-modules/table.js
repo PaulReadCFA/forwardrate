@@ -96,9 +96,9 @@ function formatStrategy2(cf, isYear0, isYear2) {
 /** #19: italic r and F in table rates column */
 function formatRates(cf) {
   const rates = [];
-  if (cf.spot1Year  !== null) rates.push(`<div style="color:#047857; margin-bottom:0.25rem;"><em>r</em>\u2081: ${formatPercentage(cf.spot1Year)}</div>`);
-  if (cf.spot2Year  !== null) rates.push(`<div style="color:#dc2626; margin-bottom:0.25rem;"><em>r</em>\u2082: ${formatPercentage(cf.spot2Year)}</div>`);
-  if (cf.forwardRate !== null) rates.push(`<div style="color:#7a46ff;"><em>F</em>\u2081,\u2082: ${formatPercentage(cf.forwardRate)}</div>`);
+  if (cf.spot1Year  !== null) rates.push(`<div class="forward-rate-table-rate" style="margin-bottom:0.25rem;"><span style="color:#047857;"><em>r</em></span><span class="forward-rate-table-index">\u2081</span><span style="color:#047857;">: ${formatPercentage(cf.spot1Year)}</span></div>`);
+  if (cf.spot2Year  !== null) rates.push(`<div class="forward-rate-table-rate" style="margin-bottom:0.25rem;"><span style="color:#dc2626;"><em>r</em></span><span class="forward-rate-table-index">\u2082</span><span style="color:#dc2626;">: ${formatPercentage(cf.spot2Year)}</span></div>`);
+  if (cf.forwardRate !== null) rates.push(`<div class="forward-rate-table-rate"><span style="color:#7a46ff;"><em>F</em></span><span class="forward-rate-table-index">\u2081,\u2082</span><span style="color:#7a46ff;">: ${formatPercentage(cf.forwardRate)}</span></div>`);
   return rates.length > 0 ? rates.join('') : '&ndash;';
 }
 

@@ -10,6 +10,7 @@
  *  #19 italic math chars for r / F in tooltips
  *  #23 maturity/reinvest bars same blue as One-year (#3c6ae5)
  *  #6  prefers-reduced-motion: disable chart animations
+ *  #27 y-cash: extra range below negative bars so on-bar labels (drawn under bar) clear the x-axis
  */
 
 import { formatCurrency, formatCurrencySimple, formatPercentage } from './utils.js';
@@ -24,7 +25,10 @@ const COLORS = {
   forward:  '#7a46ff', // Purple - forward rate
   spot1:    '#047857', // Green  - 1Y spot
   spot2:    '#dc2626', // Red    - 2Y spot (line)
-  darkText: '#000000'
+  /** Body / label text — indices and bar amounts (not pure black) */
+  darkText: '#374151',
+  /** Subscripts after r / F in on-chart rate callouts */
+  rateIndexText: '#374151'
 };
 
 // #6: respect prefers-reduced-motion
@@ -42,6 +46,46 @@ function fmtMoney(value) {
   const abs = Math.abs(value);
   const formatted = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return value < 0 ? `\u2212USD${formatted}` : `USD${formatted}`;
+}
+
+/**
+ * Snap a negative lower bound to a round step (still at or below the padded value).
+ * Keeps axis limits review-friendly (e.g. -140 instead of -131).
+ */
+function snapNegativeCashAxisMin(rawMin) {
+  if (rawMin >= 0) return rawMin;
+  const a = Math.abs(rawMin);
+  const step =
+    a >= 20000 ? 5000 :
+    a >= 5000 ? 1000 :
+    a >= 2000 ? 500 :
+    a >= 500 ? 100 :
+    a >= 200 ? 25 :
+    a >= 50 ? 10 :
+    5;
+  const snappedMag = Math.ceil(a / step) * step;
+  return -snappedMag;
+}
+
+/**
+ * Negative cash bars get labels drawn below the bar (~15px in plot space).
+ * Extend y-cash min in data units so labels sit above the category axis line.
+ */
+function yCashMinForLabelClearance(datasetArrays) {
+  const values = [];
+  for (const arr of datasetArrays) {
+    for (const v of arr) {
+      if (v != null && typeof v === 'number' && !Number.isNaN(v)) values.push(v);
+    }
+  }
+  if (values.length === 0) return undefined;
+  const dataMin = Math.min(...values);
+  const dataMax = Math.max(...values);
+  if (dataMin >= 0) return undefined;
+  const span = Math.max(dataMax - dataMin, 1);
+  const pad = Math.max(span * 0.11, Math.abs(dataMin) * 0.06, 20);
+  const rawMin = dataMin - pad;
+  return snapNegativeCashAxisMin(rawMin);
 }
 
 /**
@@ -69,8 +113,21 @@ export function renderChart(calculations, showLabels = true) {
   const spot2Data             = cashFlows.map(cf => cf.spot2Year  || null);
   const forwardData           = cashFlows.map(cf => cf.forwardRate || null);
 
+  const cashBarSeries = [strategy1InitialFinal, strategy1Maturity, strategy1Reinvest, strategy2Cash];
+  const yCashMinExtended = yCashMinForLabelClearance(cashBarSeries);
+
   if (chartInstance) { chartInstance.destroy(); }
   currentFocusIndex = 0;
+
+  const yCashScale = {
+    title: { display: true, text: 'Cash flows (USD)', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+    position: 'left',
+    ticks: { callback: (v) => formatCurrencySimple(v), color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+    grid: { display: false }
+  };
+  if (yCashMinExtended !== undefined) {
+    yCashScale.min = yCashMinExtended;
+  }
 
   chartInstance = new Chart(ctx, {
     type: 'bar',
@@ -184,27 +241,22 @@ export function renderChart(calculations, showLabels = true) {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Year', color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
-          ticks: { color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          title: { display: true, text: 'Year', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          ticks: { color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
           grid:  { display: true, color: 'rgba(0,0,0,0.1)', lineWidth: 1 }
         },
-        'y-cash': {
-          title: { display: true, text: 'Cash flows (USD)', color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
-          position: 'left',
-          ticks: { callback: (v) => formatCurrencySimple(v), color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
-          grid: { display: false }
-        },
+        'y-cash': yCashScale,
         'y-rate': {
-          title: { display: true, text: 'Interest rate %', color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          title: { display: true, text: 'Interest rate %', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
           position: 'right',
           min: 0,
           max: Math.ceil(Math.max(10, calculations.forwardRate * 1.3)),
-          ticks: { callback: (v) => v.toFixed(1), stepSize: 1, color: '#000', font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          ticks: { callback: (v) => v.toFixed(1), stepSize: 1, color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
           grid: { display: true, color: 'rgba(0,0,0,0.05)', drawOnChartArea: true, drawTicks: true }
         }
       },
       layout: {
-        padding: { left: 10, right: 10, top: showLabels ? 40 : 15, bottom: 10 }
+        padding: { left: 10, right: 10, top: showLabels ? 40 : 15, bottom: yCashMinExtended !== undefined ? 22 : 10 }
       }
     },
     plugins: [
@@ -250,18 +302,32 @@ export function renderChart(calculations, showLabels = true) {
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          const drawLabelWithBox = (text, x, y, color) => {
+          /** @param {{ text: string, color: string }[]} parts — variable in accent, indices/suffix in rateIndexText */
+          const drawLabelWithBox = (parts, x, y, borderColor) => {
             const padding = 4;
-            const metrics = ctx.measureText(text);
-            const width = metrics.width + padding * 2;
-            const height = 16;
+            let totalWidth = 0;
+            for (const p of parts) {
+              ctx.fillStyle = p.color;
+              totalWidth += ctx.measureText(p.text).width;
+            }
+            const width = totalWidth + padding * 2;
+            const height = 18;
+            const left = x - width / 2;
+            const top = y - height / 2;
             ctx.fillStyle = 'white';
-            ctx.fillRect(x - width/2, y - height/2, width, height);
-            ctx.strokeStyle = color;
+            ctx.fillRect(left, top, width, height);
+            ctx.strokeStyle = borderColor;
             ctx.lineWidth = 2;
-            ctx.strokeRect(x - width/2, y - height/2, width, height);
-            ctx.fillStyle = color;
-            ctx.fillText(text, x, y);
+            ctx.strokeRect(left, top, width, height);
+            const prevAlign = ctx.textAlign;
+            ctx.textAlign = 'left';
+            let cx = left + padding;
+            for (const p of parts) {
+              ctx.fillStyle = p.color;
+              ctx.fillText(p.text, cx, y);
+              cx += ctx.measureText(p.text).width;
+            }
+            ctx.textAlign = prevAlign;
           };
 
           const spot2Meta   = chart.getDatasetMeta(4);
@@ -272,14 +338,28 @@ export function renderChart(calculations, showLabels = true) {
           spot1Meta.data.forEach((point, index) => {
             const value = chart.data.datasets[5].data[index];
             if (value !== null) {
-              drawLabelWithBox(`${ITALIC_r}\u2081: ${formatPercentage(value)}`, point.x, point.y - 16, COLORS.spot1);
+              const pct = formatPercentage(value);
+              drawLabelWithBox(
+                [
+                  { text: ITALIC_r, color: COLORS.spot1 },
+                  { text: `\u2081: ${pct}`, color: COLORS.rateIndexText }
+                ],
+                point.x, point.y - 16, COLORS.spot1
+              );
             }
           });
 
           forwardMeta.data.forEach((point, index) => {
             const value = chart.data.datasets[6].data[index];
             if (value !== null) {
-              drawLabelWithBox(`${ITALIC_F}\u2081,\u2082: ${formatPercentage(value)}`, point.x, point.y + 20, COLORS.forward);
+              const pct = formatPercentage(value);
+              drawLabelWithBox(
+                [
+                  { text: ITALIC_F, color: COLORS.forward },
+                  { text: `\u2081,\u2082: ${pct}`, color: COLORS.rateIndexText }
+                ],
+                point.x, point.y + 20, COLORS.forward
+              );
             }
           });
 
@@ -287,7 +367,14 @@ export function renderChart(calculations, showLabels = true) {
           const middleIndex = Math.floor(spot2Data.length / 2);
           if (spot2Meta.data[middleIndex] && spot2Data[middleIndex] !== null) {
             const point = spot2Meta.data[middleIndex];
-            drawLabelWithBox(`${ITALIC_r}\u2082: ${formatPercentage(spot2Data[middleIndex])}`, point.x, point.y - 16, COLORS.spot2);
+            const pct = formatPercentage(spot2Data[middleIndex]);
+            drawLabelWithBox(
+              [
+                { text: ITALIC_r, color: COLORS.spot2 },
+                { text: `\u2082: ${pct}`, color: COLORS.rateIndexText }
+              ],
+              point.x, point.y - 16, COLORS.spot2
+            );
           }
 
           ctx.restore();

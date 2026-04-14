@@ -19,7 +19,9 @@ import {
   listen, 
   focusElement, 
   announceToScreenReader,
-  debounce
+  debounce,
+  clampNumericInputLength,
+  NUMERIC_INPUT_MAX_CHARS
 } from './forward-modules/utils.js';
 import { renderChart, shouldShowLabels, destroyChart } from './forward-modules/chart.js';
 import { renderTable } from './forward-modules/table.js';
@@ -124,8 +126,12 @@ function setupInputListeners() {
       }
     }, 300);
     
-    listen(input, 'input', debouncedUpdate);
-    listen(input, 'change', debouncedUpdate);
+    const onInput = () => {
+      clampNumericInputLength(input, NUMERIC_INPUT_MAX_CHARS);
+      debouncedUpdate();
+    };
+    listen(input, 'input', onInput);
+    listen(input, 'change', onInput);
   });
 }
 

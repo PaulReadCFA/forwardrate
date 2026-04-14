@@ -23,9 +23,11 @@
 }
 
 .result-title.forward-rate {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--color-purple-bold);
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 .result-value {
@@ -47,6 +49,23 @@
   font-size: 0.8125rem;
   color: var(--color-gray-700);
   line-height: 1.5;
+}
+
+/* Final row in strategy boxes: 1px (not 2px) but tint reads as strategy colour, not grey */
+.strategy-details .forward-rate-strategy-final {
+  font-weight: 600;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  color: var(--color-gray-800);
+  font-size: 1rem;
+}
+
+.strategy-details .forward-rate-strategy-final--one-year {
+  border-top: 1px solid #93c5fd;
+}
+
+.strategy-details .forward-rate-strategy-final--two-year {
+  border-top: 1px solid #fdba74;
 }
 
 .input-group-inline {
@@ -93,6 +112,31 @@
   font-weight: 500;
 }
 
+/* Chart legend: avoid flex centering flattening <sub> / baseline (same pattern as implied growth) */
+#chart-legend .legend-item-label {
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Subscripts are indices, not part of the coloured variable — match surrounding label/legend text */
+#calculator .input-label-inline sub,
+#chart-legend .legend-item-label sub {
+  color: currentColor;
+  font-style: normal;
+  font-weight: 600;
+}
+
+#calculator .input-section {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+#calculator .validation-summary {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
 @media (max-width: 640px) {
   .input-group-inline {
     flex-direction: column;
@@ -101,13 +145,22 @@
   }
   .input-inline {
     width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: normal;
+    align-items: flex-start;
+    box-sizing: border-box;
+  }
+  .input-label-inline {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
   }
   .input-with-suffix-inline {
     width: 100%;
-    max-width: 12rem;
-  }
-  .input-label-inline {
-    min-width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 
@@ -165,4 +218,20 @@ math {
 .model-info-list li strong {
   font-weight: 600;
   color: var(--color-gray-800);
+}
+
+/* Results card: subscript indices on F — body text, not headline purple */
+.forward-rate-result-sub {
+  color: var(--color-gray-700);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.875em;
+  line-height: 0;
+  vertical-align: sub;
+}
+
+/* Table interest column: unicode subscripts after r / F */
+.forward-rate-table-index {
+  color: var(--color-gray-700);
+  font-weight: 600;
 }
