@@ -19,6 +19,14 @@ import { formatCurrency, formatCurrencySimple, formatPercentage } from './utils.
 const ITALIC_r = '\u{1D45F}'; // 𝑟
 const ITALIC_F = '\u{1D439}'; // 𝐹
 
+/** Match forwardexchange / curriculum chart label convention. */
+const CHART_FONT = {
+  family: "'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  size: 13,
+  weight: '600'
+};
+const CHART_FONT_CSS = `${CHART_FONT.weight} ${CHART_FONT.size}px ${CHART_FONT.family}`;
+
 const COLORS = {
   oneyear:  '#3c6ae5', // Blue  - 1Y strategy (all three bar types share this)
   twoyear:  '#ea792d', // Orange - 2Y strategy
@@ -120,9 +128,9 @@ export function renderChart(calculations, showLabels = true) {
   currentFocusIndex = 0;
 
   const yCashScale = {
-    title: { display: true, text: 'Cash flows (USD)', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+    title: { display: true, text: 'Cash flows (USD)', color: COLORS.darkText, font: CHART_FONT },
     position: 'left',
-    ticks: { callback: (v) => formatCurrencySimple(v), color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+    ticks: { callback: (v) => formatCurrencySimple(v), color: COLORS.darkText, font: CHART_FONT },
     grid: { display: false }
   };
   if (yCashMinExtended !== undefined) {
@@ -241,17 +249,17 @@ export function renderChart(calculations, showLabels = true) {
       },
       scales: {
         x: {
-          title: { display: true, text: 'Year', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
-          ticks: { color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          title: { display: true, text: 'Year', color: COLORS.darkText, font: CHART_FONT },
+          ticks: { color: COLORS.darkText, font: CHART_FONT },
           grid:  { display: true, color: 'rgba(0,0,0,0.1)', lineWidth: 1 }
         },
         'y-cash': yCashScale,
         'y-rate': {
-          title: { display: true, text: 'Interest rate %', color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          title: { display: true, text: 'Interest rate %', color: COLORS.darkText, font: CHART_FONT },
           position: 'right',
           min: 0,
           max: Math.ceil(Math.max(10, calculations.forwardRate * 1.3)),
-          ticks: { callback: (v) => v.toFixed(1), stepSize: 1, color: COLORS.darkText, font: { size: 13, weight: '600', family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif" } },
+          ticks: { callback: (v) => v.toFixed(1), stepSize: 1, color: COLORS.darkText, font: CHART_FONT },
           grid: { display: true, color: 'rgba(0,0,0,0.05)', drawOnChartArea: true, drawTicks: true }
         }
       },
@@ -266,7 +274,7 @@ export function renderChart(calculations, showLabels = true) {
           if (!showLabels) return;
           const ctx = chart.ctx;
           ctx.save();
-          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_CSS;
           ctx.fillStyle = COLORS.darkText;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
@@ -298,7 +306,7 @@ export function renderChart(calculations, showLabels = true) {
           if (!showLabels) return;
           const ctx = chart.ctx;
           ctx.save();
-          ctx.font = "700 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif";
+          ctx.font = CHART_FONT_CSS;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
