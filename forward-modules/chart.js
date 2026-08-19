@@ -393,16 +393,45 @@ export function renderChart(calculations, showLabels = true) {
         afterDatasetsDraw: (chart) => {
           if (document.activeElement !== canvas) return;
           const ctx = chart.ctx;
-          const meta = chart.getDatasetMeta(0);
-          if (!meta.data[currentFocusIndex]) return;
-          const bar = meta.data[currentFocusIndex];
+          const yScale = chart.scales['y-cash'];
+
+          // The four cash-flow datasets are grouped side by side and each is
+          // sparse, so span every bar actually drawn at this year rather than
+          // anchoring to dataset 0.
+          const bars = chart.data.datasets
+            .map((dataset, i) => {
+              const meta = chart.getDatasetMeta(i);
+              if (meta.type !== 'bar') return null;
+              const value = dataset.data[currentFocusIndex];
+              if (!Number.isFinite(value)) return null;
+              return meta.data[currentFocusIndex] || null;
+            })
+            .filter(Boolean);
+
+          let left, right, top, bottom;
+
+          if (bars.length > 0) {
+            left = Math.min(...bars.map((bar) => bar.x - bar.width / 2));
+            right = Math.max(...bars.map((bar) => bar.x + bar.width / 2));
+            const edges = bars.flatMap((bar) => [bar.y, bar.base]);
+            top = Math.min(...edges);
+            bottom = Math.max(...edges);
+          } else {
+            // Years with no cash flow still need a visible focus target.
+            const xScale = chart.scales.x;
+            const centre = xScale.getPixelForValue(currentFocusIndex);
+            const band = (xScale.width / Math.max(1, chart.data.labels.length)) * 0.6;
+            left = centre - band / 2;
+            right = centre + band / 2;
+            top = yScale.top;
+            bottom = yScale.bottom;
+          }
+
           ctx.save();
           ctx.strokeStyle = COLORS.darkText;
           ctx.lineWidth = 3;
           ctx.setLineDash([5, 5]);
-          const x = bar.x - 30;
-          const y = chart.scales['y-cash'].top;
-          ctx.strokeRect(x, y, 60, chart.scales['y-cash'].bottom - y);
+          ctx.strokeRect(left - 4, top - 4, right - left + 8, bottom - top + 8);
           ctx.restore();
         }
       }
@@ -470,9 +499,10 @@ function showTooltipAtIndex(index) {
     const meta = chartInstance.getDatasetMeta(elements[0].datasetIndex);
     if (meta.data[index]) {
       chartInstance.tooltip.setActiveElements(elements, { x: meta.data[index].x, y: meta.data[index].y });
-      chartInstance.update('none');
     }
   }
+  // Redraw regardless so the keyboard focus ring appears on years with no data.
+  chartInstance.update('none');
 }
 
 function announceDataPoint(cashFlow) {
