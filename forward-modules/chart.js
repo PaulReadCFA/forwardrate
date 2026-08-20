@@ -35,9 +35,14 @@ const COLORS = {
   spot2:    '#dc2626', // Red    - 2Y spot (line)
   /** Body / label text — indices and bar amounts (not pure black) */
   darkText: '#374151',
-  /** Subscripts after r / F in on-chart rate callouts */
+  /** Operator and value in on-chart rate callouts — only the variable is coloured */
   rateIndexText: '#374151'
 };
+
+/** Shared pill geometry so every label box has the same breathing space. */
+const LABEL_PAD_X = 8;
+const LABEL_PAD_Y = 5;
+const LABEL_BOX_HEIGHT = CHART_FONT.size + LABEL_PAD_Y * 2;
 
 // #6: respect prefers-reduced-motion
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -310,16 +315,15 @@ export function renderChart(calculations, showLabels = true) {
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
-          /** @param {{ text: string, color: string }[]} parts — variable in accent, indices/suffix in rateIndexText */
+          /** @param {{ text: string, color: string }[]} parts — variable and its subscript in accent, operator and value in rateIndexText */
           const drawLabelWithBox = (parts, x, y, borderColor) => {
-            const padding = 4;
             let totalWidth = 0;
             for (const p of parts) {
               ctx.fillStyle = p.color;
               totalWidth += ctx.measureText(p.text).width;
             }
-            const width = totalWidth + padding * 2;
-            const height = 18;
+            const width = totalWidth + LABEL_PAD_X * 2;
+            const height = LABEL_BOX_HEIGHT;
             const left = x - width / 2;
             const top = y - height / 2;
             ctx.fillStyle = 'white';
@@ -329,7 +333,7 @@ export function renderChart(calculations, showLabels = true) {
             ctx.strokeRect(left, top, width, height);
             const prevAlign = ctx.textAlign;
             ctx.textAlign = 'left';
-            let cx = left + padding;
+            let cx = left + LABEL_PAD_X;
             for (const p of parts) {
               ctx.fillStyle = p.color;
               ctx.fillText(p.text, cx, y);
@@ -349,8 +353,8 @@ export function renderChart(calculations, showLabels = true) {
               const pct = formatPercentage(value);
               drawLabelWithBox(
                 [
-                  { text: ITALIC_r, color: COLORS.spot1 },
-                  { text: `\u2081: ${pct}`, color: COLORS.rateIndexText }
+                  { text: `${ITALIC_r}\u2081`, color: COLORS.spot1 },
+                  { text: ` = ${pct}`, color: COLORS.rateIndexText }
                 ],
                 point.x, point.y - 16, COLORS.spot1
               );
@@ -363,8 +367,8 @@ export function renderChart(calculations, showLabels = true) {
               const pct = formatPercentage(value);
               drawLabelWithBox(
                 [
-                  { text: ITALIC_F, color: COLORS.forward },
-                  { text: `\u2081,\u2082: ${pct}`, color: COLORS.rateIndexText }
+                  { text: `${ITALIC_F}\u2081,\u2082`, color: COLORS.forward },
+                  { text: ` = ${pct}`, color: COLORS.rateIndexText }
                 ],
                 point.x, point.y + 20, COLORS.forward
               );
@@ -378,8 +382,8 @@ export function renderChart(calculations, showLabels = true) {
             const pct = formatPercentage(spot2Data[middleIndex]);
             drawLabelWithBox(
               [
-                { text: ITALIC_r, color: COLORS.spot2 },
-                { text: `\u2082: ${pct}`, color: COLORS.rateIndexText }
+                { text: `${ITALIC_r}\u2082`, color: COLORS.spot2 },
+                { text: ` = ${pct}`, color: COLORS.rateIndexText }
               ],
               point.x, point.y - 16, COLORS.spot2
             );
