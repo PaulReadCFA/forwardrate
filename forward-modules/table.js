@@ -8,13 +8,19 @@
  *  #21 no-arbitrage note lives in HTML (always visible) - table just updates it
  */
 
-import { $, formatCurrency, formatPercentage, announceToScreenReader } from './utils.js';
+import { $, formatCurrency, formatPercentage, announceToScreenReader, applyTableRoles } from './utils.js';
 
-/** No space after USD (#20) */
-function fmtMoney(value) {
+/** Numeric amount for table cells; the unit is carried by the column header. */
+function fmtMoneyAmount(value) {
   const abs = Math.abs(value);
   const str = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return value < 0 ? `\u2212USD${str}` : `USD${str}`;
+  return value < 0 ? `\u2212${str}` : str;
+}
+
+/** Currency for prose outside the table body. */
+function fmtMoney(value) {
+  const amount = fmtMoneyAmount(value);
+  return amount.startsWith('\u2212') ? `\u2212USD${amount.slice(1)}` : `USD${amount}`;
 }
 
 export function renderTable(calculations, announce = false) {
@@ -31,8 +37,8 @@ export function renderTable(calculations, announce = false) {
     <thead>
       <tr>
         <th scope="col" class="text-left">Year</th>
-        <th scope="col" class="text-right">One-Year Strategy<br>Cash Flows (USD)</th>
-        <th scope="col" class="text-right">Two-Year Strategy<br>Cash Flows (USD)</th>
+        <th scope="col" class="text-right table-var-2">One-Year Strategy<br>Cash Flows (USD)</th>
+        <th scope="col" class="text-right table-var-6">Two-Year Strategy<br>Cash Flows (USD)</th>
         <th scope="col" class="text-right">Interest Rates</th>
       </tr>
     </thead>
@@ -43,12 +49,15 @@ export function renderTable(calculations, announce = false) {
     const isYear1 = cf.year === 1;
     const isYear2 = cf.year === 2;
 
+    // data-label mirrors the column header: it becomes the visible label when the
+    // shared base reflows each row into a card below 768px. cell-value keeps
+    // multi-line cell content together as one element beside that label.
     html += `
       <tr>
-        <td class="text-left"><strong>${cf.year}</strong></td>
-        <td class="text-right">${formatStrategy1(cf, isYear0, isYear1, isYear2)}</td>
-        <td class="text-right">${formatStrategy2(cf, isYear0, isYear2)}</td>
-        <td class="text-right">${formatRates(cf)}</td>
+        <th scope="row" class="text-left" data-label="Year">${cf.year}</th>
+        <td class="text-right" data-label="One-Year Strategy Cash Flows (USD)"><span class="cell-value table-var-2">${formatStrategy1(cf, isYear0, isYear1, isYear2)}</span></td>
+        <td class="text-right" data-label="Two-Year Strategy Cash Flows (USD)"><span class="cell-value table-var-6">${formatStrategy2(cf, isYear0, isYear2)}</span></td>
+        <td class="text-right" data-label="Interest Rates"><span class="cell-value">${formatRates(cf)}</span></td>
       </tr>`;
   });
 
@@ -57,14 +66,14 @@ export function renderTable(calculations, announce = false) {
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="4" class="text-right" style="padding:0.75rem;">
+        <td colspan="4" class="text-right">
           <strong>No Arbitrage:</strong> Both strategies yield ${fmtMoney(calculations.strategy1Final)}
         </td>
       </tr>
     </tfoot>`;
 
   table.innerHTML = html;
-  table.setAttribute('aria-label', 'Forward rate analysis showing cash flows and interest rates');
+  applyTableRoles(table);
 
   // #21: also update always-visible note div
   const note = document.getElementById('no-arbitrage-note');
@@ -81,24 +90,24 @@ export function renderTable(calculations, announce = false) {
 }
 
 function formatStrategy1(cf, isYear0, isYear1, isYear2) {
-  if (isYear0) return fmtMoney(cf.strategy1Cash);
-  if (isYear1) return `Maturity: ${fmtMoney(cf.strategy1Maturity)}<br>Reinvest: ${fmtMoney(cf.strategy1Reinvest)}`;
-  if (isYear2) return fmtMoney(cf.strategy1Cash);
+  if (isYear0) return fmtMoneyAmount(cf.strategy1Cash);
+  if (isYear1) return `Maturity: ${fmtMoneyAmount(cf.strategy1Maturity)}<br>Reinvest: ${fmtMoneyAmount(cf.strategy1Reinvest)}`;
+  if (isYear2) return fmtMoneyAmount(cf.strategy1Cash);
   return '&ndash;';
 }
 
 function formatStrategy2(cf, isYear0, isYear2) {
-  if (isYear0) return fmtMoney(cf.strategy2Cash);
-  if (isYear2) return fmtMoney(cf.strategy2Cash);
+  if (isYear0) return fmtMoneyAmount(cf.strategy2Cash);
+  if (isYear2) return fmtMoneyAmount(cf.strategy2Cash);
   return '&ndash;';
 }
 
-/** #19: italic r and F in table rates column */
+/** Variables use math-italic glyphs; all table body text remains neutral. */
 function formatRates(cf) {
   const rates = [];
-  if (cf.spot1Year  !== null) rates.push(`<div class="forward-rate-table-rate" style="margin-bottom:0.25rem;"><span style="color:#047857;"><em>r</em></span><span class="forward-rate-table-index">\u2081</span><span style="color:#047857;">: ${formatPercentage(cf.spot1Year)}</span></div>`);
-  if (cf.spot2Year  !== null) rates.push(`<div class="forward-rate-table-rate" style="margin-bottom:0.25rem;"><span style="color:#dc2626;"><em>r</em></span><span class="forward-rate-table-index">\u2082</span><span style="color:#dc2626;">: ${formatPercentage(cf.spot2Year)}</span></div>`);
-  if (cf.forwardRate !== null) rates.push(`<div class="forward-rate-table-rate"><span style="color:#7a46ff;"><em>F</em></span><span class="forward-rate-table-index">\u2081,\u2082</span><span style="color:#7a46ff;">: ${formatPercentage(cf.forwardRate)}</span></div>`);
+  if (cf.spot1Year  !== null) rates.push(`<div class="forward-rate-table-rate table-var-5" style="margin-bottom:0.25rem;">𝑟\u2081 = ${formatPercentage(cf.spot1Year)}</div>`);
+  if (cf.spot2Year  !== null) rates.push(`<div class="forward-rate-table-rate table-var-red" style="margin-bottom:0.25rem;">𝑟\u2082 = ${formatPercentage(cf.spot2Year)}</div>`);
+  if (cf.forwardRate !== null) rates.push(`<div class="forward-rate-table-rate table-var-3">𝐹\u2081,\u2082 = ${formatPercentage(cf.forwardRate)}</div>`);
   return rates.length > 0 ? rates.join('') : '&ndash;';
 }
 

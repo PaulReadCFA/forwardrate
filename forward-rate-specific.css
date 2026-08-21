@@ -5,6 +5,9 @@
   --color-forward-twoyear: #ea792d;        /* Orange - 2-year strategy */
   --color-forward-spot1: #38337b;          /* Dark blue - 1Y spot */
   --color-forward-spot2: #ea792d;          /* Orange - 2Y spot */
+  /* Label / legend text: match the chart series for r1 and r2 */
+  --color-forward-spot1-text: #047857;     /* Green - 1Y spot */
+  --color-forward-spot2-text: #dc2626;     /* Red - 2Y spot */
 }
 
 .result-box.forward-rate {
@@ -68,49 +71,10 @@
   border-top: 1px solid #fdba74;
 }
 
-.input-group-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.5rem; /* #10: tighter gap */
-}
-
-.input-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* #10: reduced gap */
-  white-space: nowrap;
-}
-
-.input-label-inline {
-  font-size: 1rem;
-  color: var(--color-gray-700);
-  min-width: auto;
-  font-weight: 500;
-}
-
-.input-with-suffix-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.input-field-inline {
-  flex: 1;
-  width: 5rem;
-  padding: 0.4rem 0.5rem;
-  border: 1px solid #8b93a7;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  text-align: right;
-  box-sizing: border-box;
-}
-
-.input-suffix-inline {
-  color: var(--color-gray-500);
-  font-size: 1rem;
-  font-weight: 500;
-}
+/* Data entry comes from cfa-base.css. Only the label variable colours
+   are forward-rate-specific. */
+.label-var-spot1 { color: var(--color-forward-spot1-text); }
+.label-var-spot2 { color: var(--color-forward-spot2-text); }
 
 /* Chart legend: avoid flex centering flattening <sub> / baseline (same pattern as implied growth) */
 #chart-legend .legend-item-label {
@@ -118,8 +82,7 @@
   max-width: 100%;
 }
 
-/* Subscripts are indices, not part of the coloured variable — match surrounding label/legend text */
-#calculator .input-label-inline sub,
+/* Subscripts are indices, not part of the coloured variable — match surrounding legend text */
 #chart-legend .legend-item-label sub {
   color: currentColor;
   font-style: normal;
@@ -129,39 +92,11 @@
 #calculator .input-section {
   max-width: 100%;
   min-width: 0;
-  overflow-x: hidden;
 }
 
 #calculator .validation-summary {
   margin-top: 0;
   margin-bottom: 0.75rem;
-}
-
-@media (max-width: 640px) {
-  .input-group-inline {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  .input-inline {
-    width: 100%;
-    max-width: 100%;
-    flex-wrap: wrap;
-    white-space: normal;
-    align-items: flex-start;
-    box-sizing: border-box;
-  }
-  .input-label-inline {
-    flex: 1 1 100%;
-    max-width: 100%;
-    min-width: 0;
-    white-space: normal;
-  }
-  .input-with-suffix-inline {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
 }
 
 .equation-container {

@@ -60,7 +60,7 @@
             <div class="input-group-inline">
               <div class="input-inline">
                 <label for="spot-1year" class="input-label-inline">
-                  One-year spot rate (<span style="color: #047857; font-weight: 700;"><i>r</i></span><sub>1</sub>):
+                  One-year spot rate (<span class="label-var-spot1">𝑟<sub>1</sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input type="number" id="spot-1year" class="input-field-inline"
@@ -71,7 +71,7 @@
 
               <div class="input-inline">
                 <label for="spot-2year" class="input-label-inline">
-                  Two-year spot rate (<span style="color: #dc2626; font-weight: 700;"><i>r</i></span><sub>2</sub>):
+                  Two-year spot rate (<span class="label-var-spot2">𝑟<sub>2</sub></span>):
                 </label>
                 <div class="input-with-suffix-inline">
                   <input type="number" id="spot-2year" class="input-field-inline"
@@ -116,15 +116,15 @@
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #047857; border-radius: 50%;"></span>
-                  <span class="legend-item-label">1Y Spot (<span style="color: #047857; font-weight: 700;"><i>r</i></span><sub>1</sub>)</span>
+                  <span class="legend-item-label">1Y Spot (<span style="color: #047857; font-weight: 700;">𝑟<sub>1</sub></span>)</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
-                  <span class="legend-item-label">2Y Spot (<span style="color: #dc2626; font-weight: 700;"><i>r</i></span><sub>2</sub>)</span>
+                  <span class="legend-item-label">2Y Spot (<span style="color: #dc2626; font-weight: 700;">𝑟<sub>2</sub></span>)</span>
                 </li>
                 <li class="legend-item" role="listitem">
                   <span class="legend-color" style="background-color: #7a46ff; border-radius: 50%;"></span>
-                  <span class="legend-item-label">Forward (<span style="color: #7a46ff; font-weight: 700;"><i>F</i></span><sub>1,2</sub>)</span>
+                  <span class="legend-item-label">Forward (<span style="color: #7a46ff; font-weight: 700;">𝐹<sub>1,2</sub></span>)</span>
                 </li>
               </ul>
             </div>
@@ -155,9 +155,9 @@
           </div>
 
           <!-- Table -->
-          <div id="table-container" class="table-wrapper" style="display: none;"
-               role="region" aria-label="Forward rate analysis table" tabindex="-1">
-            <table id="cash-flow-table" class="data-table" tabindex="-1"></table>
+          <div id="table-container" class="table-wrapper table-card-layout" style="display: none;"
+               role="region" aria-label="Forward rate analysis table" tabindex="0">
+            <table id="cash-flow-table" class="data-table"></table>
           </div>
 
           <!-- No Arbitrage note — always visible in both chart and table views -->
