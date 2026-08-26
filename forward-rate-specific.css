@@ -106,7 +106,7 @@
   border: 1px solid var(--color-gray-200);
   border-radius: 0.5rem;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
 }

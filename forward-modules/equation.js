@@ -37,25 +37,25 @@ export function renderDynamicEquation(calculations, params) {
   container.style.visibility = 'hidden';
   container.innerHTML = mathML;
 
-  // After MathJax renders: reveal and update aria-label with the computed result
-  // so SR users hear the full equation result on first tab — no input change needed
-  if (window.MathJax) {
-    MathJax.Hub.Queue(
-      ["Typeset", MathJax.Hub, container],
-      () => {
-        container.style.visibility = 'visible';
-        container.setAttribute(
-          'aria-label',
-          `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
-        );
-      }
-    );
-  } else {
+  const reveal = () => {
     container.style.visibility = 'visible';
     container.setAttribute(
       'aria-label',
       `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
     );
+    // MathJax can hand back focusable wrappers even with inTabOrder:false;
+    // drop the generated tabindex without hiding the rendered maths
+    container
+      .querySelectorAll('.MathJax[tabindex], .MathJax_Display[tabindex]')
+      .forEach((el) => el.removeAttribute('tabindex'));
+  };
+
+  // After MathJax renders: reveal and update aria-label with the computed result
+  // so SR users hear the full equation result on first tab — no input change needed
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container], reveal);
+  } else {
+    reveal();
   }
   
   // Create screen-reader friendly announcement - concise update

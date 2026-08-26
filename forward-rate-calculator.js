@@ -229,6 +229,16 @@ function switchView(view, moveFocus = true) {
     canvas: $('#forward-chart'),
     showChart: view === 'chart',
   });
+  const chartPointAnnouncement = $('#chart-point-announcement');
+  if (chartPointAnnouncement) {
+    if (view === 'chart') {
+      chartPointAnnouncement.textContent = '';
+      chartPointAnnouncement.removeAttribute('aria-hidden');
+    } else {
+      chartPointAnnouncement.setAttribute('aria-hidden', 'true');
+      chartPointAnnouncement.textContent = '';
+    }
+  }
 
   if (view === 'chart') {
     if (legendRegion) legendRegion.style.visibility = 'visible';

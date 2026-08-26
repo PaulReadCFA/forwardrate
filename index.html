@@ -145,18 +145,24 @@
 
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
 
-          <div class="sr-only" id="forward-chart-desc" hidden>
+          <div class="sr-only" id="forward-chart-desc">
             <h4 id="forward-chart-title">Implied forward rate analysis over time</h4>
             <p>This chart compares two investment strategies to demonstrate no-arbitrage pricing.
                The one-year strategy invests for 1 year, then reinvests at the forward rate.
                The two-year strategy invests for the full 2 years. Both strategies yield the same final value.</p>
           </div>
+          <p id="chart-keyboard-help" class="sr-only">
+            Use Left and Right arrow keys to move between years. Home moves to the first year and End moves to the last year.
+          </p>
+          <p id="chart-point-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></p>
 
           <!-- Chart -->
           <div id="chart-container" class="chart-wrapper"
                role="region" aria-labelledby="forward-chart-title"
                tabindex="-1" style="height: 32rem;">
-            <canvas id="forward-chart"></canvas>
+            <canvas id="forward-chart" role="img"
+                    aria-labelledby="forward-chart-title"
+                    aria-describedby="forward-chart-desc chart-keyboard-help"></canvas>
           </div>
 
           <!-- Table -->

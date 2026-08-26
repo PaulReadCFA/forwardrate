@@ -52,10 +52,6 @@ function syncChartTypography() {
   LABEL_BOX_HEIGHT = t.pill.boxHeight;
 }
 
-// #6: respect prefers-reduced-motion
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const CHART_ANIMATION_DURATION = prefersReducedMotion ? 0 : 400;
-
 let chartInstance = null;
 let currentFocusIndex = 0;
 let isKeyboardMode = false;
@@ -114,6 +110,7 @@ function yCashMinForLabelClearance(datasetArrays) {
  */
 export function renderChart(calculations, showLabels = true) {
   syncChartTypography();
+  const chartAnimationDuration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 400;
   const canvas = document.getElementById('forward-chart');
   if (!canvas) { console.error('Chart canvas not found'); return; }
 
@@ -230,14 +227,8 @@ export function renderChart(calculations, showLabels = true) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: CHART_ANIMATION_DURATION }, // #6
+      animation: { duration: chartAnimationDuration }, // #6
       interaction: { mode: 'index', intersect: false },
-      onHover: (event, activeElements) => {
-        if (isKeyboardMode && document.activeElement === canvas) return;
-        if (activeElements.length > 0) {
-          announceDataPoint(cashFlows[activeElements[0].index]);
-        }
-      },
       plugins: {
         title:  { display: false },
         legend: { display: false },
@@ -519,15 +510,8 @@ function showTooltipAtIndex(index) {
 }
 
 function announceDataPoint(cashFlow) {
-  let liveRegion = document.getElementById('chart-live-region');
-  if (!liveRegion) {
-    liveRegion = document.createElement('div');
-    liveRegion.id = 'chart-live-region';
-    liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.setAttribute('aria-atomic', 'true');
-    liveRegion.className = 'sr-only';
-    document.body.appendChild(liveRegion);
-  }
+  const liveRegion = document.getElementById('chart-point-announcement');
+  if (!liveRegion || liveRegion.getAttribute('aria-hidden') === 'true') return;
 
   let msg = `Year ${cashFlow.year}. `;
   if (cashFlow.spot1Year)     msg += `1-year spot rate: ${formatPercentage(cashFlow.spot1Year)}. `;
