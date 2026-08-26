@@ -370,48 +370,39 @@ function handleResponsiveView() {
 // SELF-TESTS
 // =============================================================================
 
+function logSelfTest(name, passed, detail) {
+  if (passed) console.log(`✓ ${name}`);
+  else console.warn(`✗ ${name}${detail ? ': ' + detail : ''}`);
+}
+
 function runSelfTests() {
   console.log('Running self-tests...');
-  
-  const tests = [
-    {
-      name: 'Forward rate calculation',
-      inputs: { spot1Year: 6.3, spot2Year: 8.0 },
-      expected: { forwardApprox: 9.73 }
-    },
-    {
-      name: 'No arbitrage condition',
-      inputs: { spot1Year: 5.0, spot2Year: 6.0 },
-      expected: { strategiesEqual: true }
-    }
-  ];
-  
-  tests.forEach(test => {
-    try {
-      const result = calculateForwardMetrics(test.inputs);
-      
-      if (test.expected.forwardApprox !== undefined) {
-        const diff = Math.abs(result.forwardRate - test.expected.forwardApprox);
-        if (diff <= 0.1) {
-          console.log(`✓ ${test.name} passed`);
-        } else {
-          console.warn(`✗ ${test.name} failed: expected ~${test.expected.forwardApprox}%, got ${result.forwardRate.toFixed(2)}%`);
-        }
-      }
-      
-      if (test.expected.strategiesEqual) {
-        const diff = Math.abs(result.strategy1Final - result.strategy2Final);
-        if (diff < 0.01) {
-          console.log(`✓ ${test.name} passed: strategies equal`);
-        } else {
-          console.warn(`✗ ${test.name} failed: strategy values differ by $${diff.toFixed(2)}`);
-        }
-      }
-    } catch (error) {
-      console.error(`✗ ${test.name} threw error:`, error);
-    }
-  });
-  
+
+  const defaults = calculateForwardMetrics({ spot1Year: 6.3, spot2Year: 8.0 });
+  logSelfTest('Defaults → f(1,1) ≈ 9.73%', Math.abs(defaults.forwardRate - 9.73) <= 0.1, `got ${defaults.forwardRate}`);
+  logSelfTest('Valid outputs are finite', Number.isFinite(defaults.forwardRate));
+
+  const equal = calculateForwardMetrics({ spot1Year: 5.0, spot2Year: 6.0 });
+  logSelfTest(
+    'No-arbitrage strategies match',
+    Math.abs(equal.strategy1Final - equal.strategy2Final) < 0.01,
+    `diff ${Math.abs(equal.strategy1Final - equal.strategy2Final)}`
+  );
+
+  const empty = validateAllInputs({ spot1Year: NaN, spot2Year: 8.0 });
+  logSelfTest('Empty 1-year spot is required', Boolean(empty.spot1Year));
+
+  const range = validateAllInputs({ spot1Year: 6.3, spot2Year: 51 });
+  logSelfTest('2-year spot above max is rejected', Boolean(range.spot2Year));
+
+  const inverted = getYieldCurveWarning({ spot1Year: 8, spot2Year: 6 });
+  const invertedCalc = calculateForwardMetrics({ spot1Year: 8, spot2Year: 6 });
+  const invertedErrors = validateAllInputs({ spot1Year: 8, spot2Year: 6 });
+  logSelfTest(
+    'Inverted curve is a warning, not an error',
+    Boolean(inverted) && Object.keys(invertedErrors).length === 0 && Number.isFinite(invertedCalc.forwardRate)
+  );
+
   console.log('Self-tests complete');
 }
 
