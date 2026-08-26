@@ -52,7 +52,7 @@
           </p>
 
           <div class="input-section">
-            <div id="validation-summary" class="validation-summary" role="alert" style="display: none;">
+            <div id="validation-summary" class="validation-summary" style="display: none;">
               <div class="validation-title">Please correct the following:</div>
               <ul id="validation-list"></ul>
             </div>
@@ -131,13 +131,16 @@
               </ul>
             </div>
 
-            <div class="button-group" role="group" aria-label="View mode - switch between chart and table">
-              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true" aria-label="Chart view">Chart</button>
-              <button id="table-view-btn" class="toggle-btn" aria-pressed="false" aria-label="Table view">Table</button>
+            <div class="button-group" role="toolbar" aria-label="Chart or table view" aria-describedby="view-toggle-help">
+              <button id="chart-view-btn" class="toggle-btn active" aria-pressed="true" aria-label="Chart view" aria-controls="chart-container">Chart</button>
+              <button id="table-view-btn" class="toggle-btn" aria-pressed="false" aria-label="Table view" aria-controls="table-container">Table</button>
             </div>
           </div>
           <p id="chart-helper-text" class="text-xs text-gray-500" style="display: none; margin-bottom: 0.75rem;">
             Chart view is not available at narrow screen widths. Showing table view.
+          </p>
+          <p id="view-toggle-help" class="sr-only">
+            Chart and Table act as a single toolbar: only one button is in the tab order at a time. Use left and right arrow keys to move between them. Table lists every value in one place.
           </p>
 
           <div class="sr-only" aria-live="polite" aria-atomic="true" id="view-announcement"></div>
@@ -158,6 +161,7 @@
 
           <!-- Table -->
           <div id="table-container" class="table-wrapper table-card-layout" style="display: none;"
+               aria-hidden="true"
                role="region" aria-label="Forward rate analysis table" tabindex="0">
             <table id="cash-flow-table" class="data-table"></table>
           </div>

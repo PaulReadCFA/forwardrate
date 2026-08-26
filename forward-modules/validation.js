@@ -1,4 +1,13 @@
-import { $ } from './utils.js';
+import {
+  updateFieldError,
+  updateValidationSummary,
+  hasErrors,
+  requiredMessage,
+  minMessage,
+  maxMessage,
+} from '../validation-ui.js';
+
+export { updateFieldError, updateValidationSummary, hasErrors };
 
 const VALIDATION_RULES = {
   spot1Year: {
@@ -22,15 +31,15 @@ export function validateField(field, value) {
   if (!rules) return null;
   
   if (rules.required && (value === '' || value == null || isNaN(value))) {
-    return `${rules.label} is required`;
+    return requiredMessage(rules.label);
   }
   
   if (rules.min !== undefined && value < rules.min) {
-    return `${rules.label} must be between ${rules.min}${rules.unit || ''} and ${rules.max}${rules.unit || ''}`;
+    return minMessage(rules.label, `${rules.min}${rules.unit || ''}`);
   }
   
   if (rules.max !== undefined && value > rules.max) {
-    return `${rules.label} must be between ${rules.min}${rules.unit || ''} and ${rules.max}${rules.unit || ''}`;
+    return maxMessage(rules.label, `${rules.max}${rules.unit || ''}`);
   }
   
   return null;
@@ -66,37 +75,4 @@ export function getYieldCurveWarning(inputs) {
   }
 
   return null;
-}
-
-export function updateFieldError(fieldId, errorMessage) {
-  const input = $(`#${fieldId}`);
-  if (!input) return;
-  
-  if (errorMessage) {
-    input.setAttribute('aria-invalid', 'true');
-    input.classList.add('error');
-  } else {
-    input.removeAttribute('aria-invalid');
-    input.classList.remove('error');
-  }
-}
-
-export function updateValidationSummary(errors) {
-  const summary = $('#validation-summary');
-  const list = $('#validation-list');
-
-  if (!summary || !list) return;
-
-  if (hasErrors(errors)) {
-    list.innerHTML = Object.entries(errors)
-      .map(([field, message]) => `<li>${message}</li>`)
-      .join('');
-    summary.style.display = 'block';
-  } else {
-    summary.style.display = 'none';
-  }
-}
-
-export function hasErrors(errors) {
-  return Object.keys(errors).length > 0;
 }

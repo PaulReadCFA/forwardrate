@@ -27,6 +27,13 @@ import { renderChart, shouldShowLabels, destroyChart } from './forward-modules/c
 import { renderTable } from './forward-modules/table.js';
 import { renderResults } from './forward-modules/results.js';
 import { renderDynamicEquation } from './forward-modules/equation.js';
+import { allFinite } from './validation-ui.js';
+import {
+  applyChartTableVisibility,
+  updateToggleButtonStates,
+  announceView,
+  VIEW_ANNOUNCEMENTS,
+} from './view-toggle.js';
 
 // =============================================================================
 // INITIALIZATION
@@ -154,6 +161,14 @@ function updateCalculations() {
       spot1Year,
       spot2Year
     });
+    if (!allFinite(
+      calculations.forwardRate,
+      calculations.strategy1Final,
+      calculations.strategy2Final
+    )) {
+      setState({ forwardCalculations: null });
+      return;
+    }
     
     setState({ forwardCalculations: calculations });
     
@@ -204,38 +219,29 @@ function switchView(view, moveFocus = true) {
   const tableContainer = $('#table-container');
   const legendRegion = $('#chart-legend-region'); // #3: legend now in own region
   
+  const changed = state.viewMode !== view;
   setState({ viewMode: view });
-  
+  const forceTable = window.innerWidth < 600;
+  updateToggleButtonStates({ chartBtn, tableBtn, showingChart: view === 'chart', forceTable });
+  applyChartTableVisibility({
+    chartEl: chartContainer,
+    tableEl: tableContainer,
+    canvas: $('#forward-chart'),
+    showChart: view === 'chart',
+  });
+
   if (view === 'chart') {
-    chartBtn.classList.add('active');
-    chartBtn.setAttribute('aria-pressed', 'true');
-    tableBtn.classList.remove('active');
-    tableBtn.setAttribute('aria-pressed', 'false');
-    
-    chartContainer.style.display = 'block';
-    tableContainer.style.display = 'none';
     if (legendRegion) legendRegion.style.visibility = 'visible';
-    
-    announceToScreenReader('Chart view active');
     if (moveFocus) {
       focusElement(chartContainer, 100);
     }
-    
   } else {
-    tableBtn.classList.add('active');
-    tableBtn.setAttribute('aria-pressed', 'true');
-    chartBtn.classList.remove('active');
-    chartBtn.setAttribute('aria-pressed', 'false');
-    
-    tableContainer.style.display = 'block';
-    chartContainer.style.display = 'none';
     if (legendRegion) legendRegion.style.visibility = 'hidden';
-    
-    announceToScreenReader('Table view active');
     if (moveFocus) {
       focusElement($('#cash-flow-table'), 100);
     }
   }
+  if (changed) announceView(VIEW_ANNOUNCEMENTS[view]);
 }
 
 // =============================================================================
@@ -342,6 +348,12 @@ function handleResponsiveView() {
     }
     if (helper) helper.style.display = 'none';
   }
+  updateToggleButtonStates({
+    chartBtn,
+    tableBtn,
+    showingChart: state.viewMode === 'chart',
+    forceTable: viewportWidth < 600,
+  });
 }
 
 // =============================================================================
