@@ -3,6 +3,7 @@ export const state = {
   spot2Year: 8.0,
   viewMode: 'chart',
   errors: {},
+  yieldCurveWarning: null,
   forwardCalculations: null,
   listeners: []
 };

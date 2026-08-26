@@ -8,8 +8,8 @@
 import { state, setState, subscribe } from './forward-modules/state.js';
 import { calculateForwardMetrics } from './forward-modules/calculations.js';
 import { 
-  validateAllInputs, 
-  validateField, 
+  validateAllInputs,
+  getYieldCurveWarning,
   updateFieldError, 
   updateValidationSummary,
   hasErrors 
@@ -103,23 +103,24 @@ function setupInputListeners() {
     
     const debouncedUpdate = debounce(() => {
       const value = parseFloat(input.value);
-      
-      const error = validateField(field, value);
-      updateFieldError(id, error);
-      
-      const errors = { ...state.errors };
-      if (error) {
-        errors[field] = error;
-      } else {
-        delete errors[field];
-      }
+      const candidate = {
+        spot1Year: field === 'spot1Year' ? value : state.spot1Year,
+        spot2Year: field === 'spot2Year' ? value : state.spot2Year
+      };
+      const errors = validateAllInputs(candidate);
+      const warning = getYieldCurveWarning(candidate);
+
+      updateFieldError('spot-1year', errors.spot1Year || null);
+      updateFieldError('spot-2year', errors.spot2Year || null);
       
       setState({
         [field]: value,
-        errors
+        errors,
+        yieldCurveWarning: warning
       });
       
       updateValidationSummary(errors);
+      updateYieldCurveWarning(warning);
       
       if (!hasErrors(errors)) {
         updateCalculations();
@@ -133,6 +134,13 @@ function setupInputListeners() {
     listen(input, 'input', onInput);
     listen(input, 'change', onInput);
   });
+}
+
+function updateYieldCurveWarning(message) {
+  const warning = $('#yield-curve-warning');
+  if (!warning) return;
+  warning.textContent = message || '';
+  warning.style.display = message ? 'block' : 'none';
 }
 
 function updateCalculations() {

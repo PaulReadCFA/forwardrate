@@ -46,11 +46,26 @@ export function validateAllInputs(inputs) {
     }
   });
   
-  if (inputs.spot2Year > 0 && inputs.spot1Year > 0 && inputs.spot2Year <= inputs.spot1Year) {
-    errors.yieldCurve = 'Note: 2-year rate typically higher than 1-year rate for normal yield curve';
-  }
-  
   return errors;
+}
+
+/**
+ * A flat or inverted curve is unusual, but mathematically valid.
+ * Return advisory copy separately so it never blocks calculation.
+ */
+export function getYieldCurveWarning(inputs) {
+  const { spot1Year, spot2Year } = inputs;
+  if (!Number.isFinite(spot1Year) || !Number.isFinite(spot2Year)) return null;
+
+  if (spot2Year < spot1Year) {
+    return 'The 2-year spot rate is below the 1-year spot rate, indicating an inverted yield curve. The forward-rate calculation remains valid.';
+  }
+
+  if (spot2Year === spot1Year) {
+    return 'The 1-year and 2-year spot rates are equal, indicating a flat yield curve. The forward-rate calculation remains valid.';
+  }
+
+  return null;
 }
 
 export function updateFieldError(fieldId, errorMessage) {

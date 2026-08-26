@@ -19,7 +19,9 @@ export function calculateForwardRate({ spot1Year, spot2Year }) {
     strategy1Year1Value: strategy1Year1,
     strategy1Final: strategy1Year2,
     strategy2Final: strategy2Year2,
-    isValid: r1 > 0 && r2 > 0 && r1 < 0.5 && r2 < 0.5
+    isValid: Number.isFinite(forwardRatePct)
+      && r1 >= 0 && r2 >= 0
+      && r1 <= 0.5 && r2 <= 0.5
   };
 }
 
