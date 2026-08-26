@@ -6,7 +6,7 @@
   --color-forward-spot1: #38337b;          /* Dark blue - 1Y spot */
   --color-forward-spot2: #ea792d;          /* Orange - 2Y spot */
   /* Label / legend text: match the chart series for r1 and r2 */
-  --color-forward-spot1-text: #047857;     /* Green - 1Y spot */
+  --color-forward-spot1-text: var(--color-green-data);     /* Green - 1Y spot */
   --color-forward-spot2-text: #dc2626;     /* Red - 2Y spot */
 }
 
@@ -76,6 +76,23 @@
 .label-var-spot1 { color: var(--color-forward-spot1-text); }
 .label-var-spot2 { color: var(--color-forward-spot2-text); }
 
+.legend-swatch-one-year { background-color: var(--color-forward-oneyear); }
+.legend-swatch-two-year { background-color: var(--color-forward-twoyear); }
+.legend-swatch-spot-one,
+.legend-swatch-forward {
+  border-radius: 50%;
+}
+.legend-swatch-spot-one { background-color: var(--color-forward-spot1-text); }
+.legend-swatch-spot-two {
+  height: 3px;
+  border-radius: 0;
+  background-color: var(--color-forward-spot2-text);
+}
+.legend-swatch-forward { background-color: var(--color-forward-rate); }
+.legend-var-spot-one { color: var(--color-forward-spot1-text); }
+.legend-var-spot-two { color: var(--color-forward-spot2-text); }
+.legend-var-forward { color: var(--color-forward-rate); }
+
 /* Chart legend: avoid flex centering flattening <sub> / baseline (same pattern as implied growth) */
 #chart-legend .legend-item-label {
   display: inline-block;
@@ -109,6 +126,17 @@
   overflow-y: visible;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
+}
+
+#equation-card #dynamic-equation-container {
+  min-height: 7.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#visualizer #chart-container {
+  min-height: 32rem;
 }
 
 math {
@@ -163,6 +191,14 @@ math {
   font-size: 0.875em;
   line-height: 0;
   vertical-align: sub;
+}
+
+.result-title.strategy-one-year {
+  color: #1e40af;
+}
+
+.result-title.strategy-two-year {
+  color: #c2410c;
 }
 
 /* Table interest column: unicode subscripts after r / F */

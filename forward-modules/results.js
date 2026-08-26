@@ -62,7 +62,7 @@ function createStrategy1Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy' });
 
   const title = createElement('h5', {
-    style: 'color: #1e40af; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;'
+    className: 'result-title strategy-one-year'
   }, 'One-Year Strategy');
   box.appendChild(title);
 
@@ -92,7 +92,7 @@ function createStrategy2Box(calculations, params) {
   const box = createElement('div', { className: 'result-box strategy-twoyear' });
 
   const title = createElement('h5', {
-    style: 'color: #c2410c; font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem;'
+    className: 'result-title strategy-two-year'
   }, 'Two-Year Strategy');
   box.appendChild(title);
 

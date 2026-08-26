@@ -28,7 +28,7 @@ const COLORS = {
   oneyear:  '#3c6ae5', // Blue  - 1Y strategy (all three bar types share this)
   twoyear:  '#ea792d', // Orange - 2Y strategy
   forward:  '#7a46ff', // Purple - forward rate
-  spot1:    '#047857', // Green  - 1Y spot
+  spot1:    '#07514F', // Green  - 1Y spot
   spot2:    '#dc2626', // Red    - 2Y spot (line)
   /** Body / label text — indices and bar amounts (not pure black) */
   darkText: '#374151',

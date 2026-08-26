@@ -9,7 +9,7 @@
   <!-- Google Fonts: Lato -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="cfa-base.css">
@@ -44,8 +44,8 @@
       </noscript>
 
       <!-- Card 1: Calculator -->
-      <section class="card" id="calculator" tabindex="-1">
-        <h4 class="card-title">Implied Forward Rate Calculator</h4>
+      <section class="card" id="calculator" tabindex="-1" aria-labelledby="calculator-title">
+        <h4 class="card-title" id="calculator-title">Implied Forward Rate Calculator</h4>
         <div class="card-content">
           <p class="equation-intro">
             Enter your spot rates below. The calculations and visualizations will update automatically as you change the values.
@@ -87,21 +87,20 @@
       </section>
 
       <!-- Card 2: Dynamic Equation -->
-      <section id="equation-card" class="card">
-        <h4 class="card-title">Implied Forward Rate Equation</h4>
+      <section id="equation-card" class="card" aria-labelledby="equation-title">
+        <h4 class="card-title" id="equation-title">Implied Forward Rate Equation</h4>
         <p class="equation-intro">
           Using your inputs, this equation calculates the forward rate that ensures no arbitrage between investing strategies.
         </p>
         <div class="equation-container" role="region" aria-label="Forward rate calculation with your values"
-             id="dynamic-equation-container" tabindex="0"
-             style="height: 120px; min-height: 120px; display: flex; align-items: center; justify-content: center;">
+             id="dynamic-equation-container" tabindex="0">
           <div id="dynamic-mathml-equation"></div>
         </div>
       </section>
 
       <!-- Card 3: Visualizer -->
-      <section class="card" id="visualizer" tabindex="-1">
-        <h4 class="card-title">Implied Forward Rate Analysis</h4>
+      <section class="card" id="visualizer" tabindex="-1" aria-labelledby="visualizer-title">
+        <h4 class="card-title" id="visualizer-title">Implied Forward Rate Analysis</h4>
         <div class="card-content">
 
           <!-- view-controls: legend left, buttons right -->
@@ -109,24 +108,24 @@
             <div role="region" aria-label="Chart legend" id="chart-legend-region">
               <ul class="legend" id="chart-legend" role="list" aria-label="Chart legend">
                 <li class="legend-item" role="listitem">
-                  <span class="legend-color" style="background-color: #3c6ae5;"></span>
+                  <span class="legend-color legend-swatch-one-year"></span>
                   <span class="legend-item-label">One-year strategy</span>
                 </li>
                 <li class="legend-item" role="listitem">
-                  <span class="legend-color" style="background-color: #ea792d;"></span>
+                  <span class="legend-color legend-swatch-two-year"></span>
                   <span class="legend-item-label">Two-year strategy</span>
                 </li>
                 <li class="legend-item" role="listitem">
-                  <span class="legend-color" style="background-color: #047857; border-radius: 50%;"></span>
-                  <span class="legend-item-label">1Y Spot <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var" style="color: #047857; font-weight: 700;">𝑟<sub>1</sub></span><span class="legend-paren">)</span></span></span>
+                  <span class="legend-color legend-swatch-spot-one"></span>
+                  <span class="legend-item-label">1Y Spot <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var legend-var-spot-one">𝑟<sub>1</sub></span><span class="legend-paren">)</span></span></span>
                 </li>
                 <li class="legend-item" role="listitem">
-                  <span class="legend-color" style="background-color: #dc2626; height: 3px; border-radius: 0;"></span>
-                  <span class="legend-item-label">2Y Spot <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var" style="color: #dc2626; font-weight: 700;">𝑟<sub>2</sub></span><span class="legend-paren">)</span></span></span>
+                  <span class="legend-color legend-swatch-spot-two"></span>
+                  <span class="legend-item-label">2Y Spot <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var legend-var-spot-two">𝑟<sub>2</sub></span><span class="legend-paren">)</span></span></span>
                 </li>
                 <li class="legend-item" role="listitem">
-                  <span class="legend-color" style="background-color: #7a46ff; border-radius: 50%;"></span>
-                  <span class="legend-item-label">Forward <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var" style="color: #7a46ff; font-weight: 700;">𝐹<sub>1,2</sub></span><span class="legend-paren">)</span></span></span>
+                  <span class="legend-color legend-swatch-forward"></span>
+                  <span class="legend-item-label">Forward <span class="legend-var-wrap"><span class="legend-paren">(</span><span class="legend-var legend-var-forward">𝐹<sub>1,2</sub></span><span class="legend-paren">)</span></span></span>
                 </li>
               </ul>
             </div>
@@ -159,7 +158,7 @@
           <!-- Chart -->
           <div id="chart-container" class="chart-wrapper"
                role="region" aria-labelledby="forward-chart-title"
-               tabindex="-1" style="height: 32rem;">
+               tabindex="-1">
             <canvas id="forward-chart" role="img"
                     aria-labelledby="forward-chart-title"
                     aria-describedby="forward-chart-desc chart-keyboard-help"></canvas>
@@ -181,8 +180,8 @@
       </section>
 
       <!-- Card 4: Results -->
-      <section class="card" id="results-card">
-        <h4 class="card-title">Results and Analysis</h4>
+      <section class="card" id="results-card" aria-labelledby="results-title">
+        <h4 class="card-title" id="results-title">Results and Analysis</h4>
         <div class="card-content">
           <div id="results-content"></div>
         </div>

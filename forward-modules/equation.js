@@ -29,7 +29,7 @@ export function renderDynamicEquation(calculations, params) {
   // Indices 1,2 use body text colour; only F / result highlight use purple (same for r in static MathML)
   const mathML = `
     <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
-      $$ {\\color{#7a46ff}{F}}_{\\color{#374151}{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#047857}{${s1}})} - 1 = \\color{#7a46ff}{${forwardDecimal} = ${forwardPercent}\\%}$$
+      $$ {\\color{#7a46ff}{F}}_{\\color{#374151}{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#07514F}{${s1}})} - 1 = \\color{#7a46ff}{${forwardDecimal} = ${forwardPercent}\\%}$$
     </div>
   `;
   
