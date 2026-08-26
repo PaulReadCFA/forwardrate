@@ -122,9 +122,7 @@ function setupInputListeners() {
       updateValidationSummary(errors);
       updateYieldCurveWarning(warning);
       
-      if (!hasErrors(errors)) {
-        updateCalculations();
-      }
+      updateCalculations();
     }, 300);
     
     const onInput = () => {
@@ -248,6 +246,7 @@ function handleStateChange(newState) {
   const { forwardCalculations, viewMode } = newState;
   
   if (!forwardCalculations) {
+    clearCalculatedViews();
     return;
   }
   
@@ -270,6 +269,19 @@ function handleStateChange(newState) {
 
   // Always re-render table data, but only announce to screen reader if table is actually visible
   renderTable(forwardCalculations, viewMode === 'table');
+}
+
+function clearCalculatedViews() {
+  destroyChart();
+
+  const results = $('#results-content');
+  if (results) results.innerHTML = '';
+
+  const equation = $('#dynamic-mathml-equation');
+  if (equation) equation.innerHTML = '';
+
+  const table = $('#cash-flow-table');
+  if (table) table.innerHTML = '';
 }
 
 // =============================================================================
