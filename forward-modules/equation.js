@@ -37,12 +37,19 @@ export function renderDynamicEquation(calculations, params) {
   container.style.visibility = 'hidden';
   container.innerHTML = mathML;
 
+  // The label belongs on the labelled region, not this generic div: aria-label
+  // is prohibited on an element with no role, and the region already names the
+  // equation for assistive technology.
+  const region = document.getElementById('dynamic-equation-container');
+
   const reveal = () => {
     container.style.visibility = 'visible';
-    container.setAttribute(
-      'aria-label',
-      `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
-    );
+    if (region) {
+      region.setAttribute(
+        'aria-label',
+        `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
+      );
+    }
     // MathJax can hand back focusable wrappers even with inTabOrder:false;
     // drop the generated tabindex without hiding the rendered maths
     container
