@@ -18,11 +18,19 @@
   <!-- MathJax for dynamic equation rendering -->
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-      menuSettings: { inTabOrder: false },
-      "HTML-CSS": { mtextFontInherit: true }
+      MathML: { extensions: ["content-mathml.js"] },
+      "HTML-CSS": {
+        scale: 100,
+        linebreaks: { automatic: true },
+        mtextFontInherit: true
+      },
+      menuSettings: { explorer: true },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      skipStartupTypeset: false
     });
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=MML_HTMLorMML"></script>
 
   <!-- Chart.js for visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -93,7 +101,7 @@
           Using your inputs, this equation calculates the forward rate that ensures no arbitrage between investing strategies.
         </p>
         <div class="equation-container" role="region" aria-label="Forward rate calculation with your values"
-             id="dynamic-equation-container" tabindex="0">
+             id="dynamic-equation-container">
           <div id="dynamic-mathml-equation"></div>
         </div>
       </section>

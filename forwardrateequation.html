@@ -78,12 +78,20 @@
       },
       showProcessingMessages: false,
       messageStyle: "none",
+      menuSettings: { explorer: true },
       skipStartupTypeset: false
     });
 
     function removeMathJaxTabindex() {
-      document.querySelectorAll(".MathJax, .MathJax_Display, [id^='MathJax-']").forEach(function (el) {
-        el.removeAttribute("tabindex");
+      document.querySelectorAll("[tabindex]").forEach(function (el) {
+        if (el.closest && el.closest(".equation-container")) return;
+        if (el.classList.contains("MathJax") ||
+            el.classList.contains("MathJax_Display") ||
+            (el.id && el.id.indexOf("MathJax-") === 0) ||
+            el.tagName === "MATH" ||
+            (el.closest && el.closest(".MathJax"))) {
+          el.removeAttribute("tabindex");
+        }
       });
     }
 
@@ -91,13 +99,14 @@
       removeMathJaxTabindex();
       setTimeout(removeMathJaxTabindex, 100);
       setTimeout(removeMathJaxTabindex, 500);
+      setTimeout(removeMathJaxTabindex, 1000);
     });
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=MML_HTMLorMML"></script>
 </head>
 <body>
-  <div class="equation-container">
+  <div class="equation-container" role="region" aria-label="Implied forward rate equation">
     <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
       <mrow>
         <msub>

@@ -13,7 +13,7 @@
  *  #27 y-cash: extra range below negative bars so on-bar labels (drawn under bar) clear the x-axis
  */
 
-import { formatCurrency, formatCurrencySimple, formatPercentage } from './utils.js';
+import { formatCurrencySimple, formatCurrencySpeech, formatPercentage } from './utils.js';
 import { getChartTypography } from '../chart-typography.js';
 
 // Unicode math-italic characters for accessible labelling (#19)
@@ -517,10 +517,10 @@ function announceDataPoint(cashFlow) {
   if (cashFlow.spot1Year)     msg += `1-year spot rate: ${formatPercentage(cashFlow.spot1Year)}. `;
   if (cashFlow.spot2Year)     msg += `2-year spot rate: ${formatPercentage(cashFlow.spot2Year)}. `;
   if (cashFlow.forwardRate)   msg += `Forward rate: ${formatPercentage(cashFlow.forwardRate)}. `;
-  if (cashFlow.strategy1Cash)    msg += `One-year strategy: ${formatCurrency(cashFlow.strategy1Cash, true)}. `;
-  if (cashFlow.strategy1Maturity) msg += `Maturity value: ${formatCurrency(cashFlow.strategy1Maturity, true)}. `;
-  if (cashFlow.strategy1Reinvest) msg += `Reinvestment: ${formatCurrency(cashFlow.strategy1Reinvest, true)}. `;
-  if (cashFlow.strategy2Cash)    msg += `Two-year strategy: ${formatCurrency(cashFlow.strategy2Cash, true)}. `;
+  if (cashFlow.strategy1Cash)    msg += `One-year strategy: ${formatCurrencySpeech(cashFlow.strategy1Cash)}. `;
+  if (cashFlow.strategy1Maturity) msg += `Maturity value: ${formatCurrencySpeech(cashFlow.strategy1Maturity)}. `;
+  if (cashFlow.strategy1Reinvest) msg += `Reinvestment: ${formatCurrencySpeech(cashFlow.strategy1Reinvest)}. `;
+  if (cashFlow.strategy2Cash)    msg += `Two-year strategy: ${formatCurrencySpeech(cashFlow.strategy2Cash)}. `;
 
   liveRegion.textContent = msg;
 }

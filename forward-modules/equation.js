@@ -4,6 +4,7 @@
  */
 
 import { formatPercentage } from './utils.js';
+import { renderEquation } from '../equation-render.js';
 
 /**
  * Render dynamic equation with user's values
@@ -25,45 +26,58 @@ export function renderDynamicEquation(calculations, params) {
   const forwardDecimal = (forwardRate / 100).toFixed(4);
   const forwardPercent = forwardRate.toFixed(2);
   
-  // Build equation with actual numeric values - show both decimal and percentage
-  // Indices 1,2 use body text colour; only F / result highlight use purple (same for r in static MathML)
   const mathML = `
     <div style="text-align: center; font-size: 1.25rem; padding: 1rem;">
-      $$ {\\color{#7a46ff}{F}}_{\\color{#374151}{1,2}} = \\frac{(1+\\color{#dc2626}{${s2}})^2}{(1+\\color{#07514F}{${s1}})} - 1 = \\color{#7a46ff}{${forwardDecimal} = ${forwardPercent}\\%}$$
+      <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+        <mrow>
+          <msub>
+            <mi mathcolor="#7A46FF">F</mi>
+            <mrow mathcolor="#374151"><mn>1</mn><mo>,</mo><mn>2</mn></mrow>
+          </msub>
+          <mo>=</mo>
+          <mfrac>
+            <msup>
+              <mrow>
+                <mo>(</mo><mn>1</mn><mo>+</mo>
+                <mn mathcolor="#DC2626">${s2}</mn><mo>)</mo>
+              </mrow>
+              <mn>2</mn>
+            </msup>
+            <mrow>
+              <mo>(</mo><mn>1</mn><mo>+</mo>
+              <mn mathcolor="#07514F">${s1}</mn><mo>)</mo>
+            </mrow>
+          </mfrac>
+          <mo>&#x2212;</mo>
+          <mn>1</mn>
+          <mo>=</mo>
+          <mn mathcolor="#7A46FF">${forwardDecimal}</mn>
+          <mo>=</mo>
+          <mrow mathcolor="#7A46FF"><mn>${forwardPercent}</mn><mo>%</mo></mrow>
+        </mrow>
+      </math>
     </div>
   `;
   
-  // Hide before updating to prevent raw LaTeX flashing during MathJax re-render
-  container.style.visibility = 'hidden';
-  container.innerHTML = mathML;
-
   // The label belongs on the labelled region, not this generic div: aria-label
   // is prohibited on an element with no role, and the region already names the
   // equation for assistive technology.
   const region = document.getElementById('dynamic-equation-container');
 
-  const reveal = () => {
-    container.style.visibility = 'visible';
-    if (region) {
-      region.setAttribute(
-        'aria-label',
-        `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
-      );
-    }
-    // MathJax can hand back focusable wrappers even with inTabOrder:false;
-    // drop the generated tabindex without hiding the rendered maths
-    container
-      .querySelectorAll('.MathJax[tabindex], .MathJax_Display[tabindex]')
-      .forEach((el) => el.removeAttribute('tabindex'));
-  };
-
-  // After MathJax renders: reveal and update aria-label with the computed result
-  // so SR users hear the full equation result on first tab — no input change needed
-  if (window.MathJax) {
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, container], reveal);
-  } else {
-    reveal();
-  }
+  // The shared mount holds the card's height and hides the raw MathML while
+  // MathJax typesets, so the cards below stay put.
+  renderEquation(container, mathML, {
+    // Update the label with the computed result so SR users hear it on first
+    // tab — no input change needed.
+    onTypeset: () => {
+      if (region) {
+        region.setAttribute(
+          'aria-label',
+          `Forward rate equation with your values. Result: ${forwardPercent}% (${forwardDecimal} decimal)`
+        );
+      }
+    },
+  });
   
   // Create screen-reader friendly announcement - concise update
   const announcement = `Forward rate: ${forwardPercent}% or ${forwardDecimal} decimal`;
