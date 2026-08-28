@@ -8,7 +8,8 @@
  *  #21 no-arbitrage note lives in HTML (always visible) - table just updates it
  */
 
-import { $, formatCurrency, formatPercentage, announceToScreenReader, applyTableRoles } from './utils.js';
+import { $, formatCurrency, formatPercentage, announceToScreenReader } from './utils.js';
+import { applyTableRoles } from '../table-roles.js';
 
 /** Numeric amount for table cells; the unit is carried by the column header. */
 function fmtMoneyAmount(value) {
